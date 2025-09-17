@@ -52,6 +52,7 @@ async function getProducts() {
     return {
       id: p.id,
       name: p.name,
+      imageUrl: p.imageUrl,
       category: p.category?.name ?? null,
       priceCents: p.priceCents,
       status: p.status,
