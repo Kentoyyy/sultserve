@@ -1,0 +1,241 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("POSTGRES_URL")
+}
+
+model Role {
+  id          String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code        String  @unique // "admin", "cashier", "manager", "inventory_clerk"
+  name        String
+  description String?
+  permissions Json?   // Array of permissions like ["manage_products", "process_orders", "view_reports"]
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  staff Staff[]
+}
+
+model Staff {
+  id          String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email       String  @unique
+  fullName    String  @map("full_name")
+  username    String? @unique
+  password    String? // Hashed password
+  phone       String?
+  address     String?
+  isActive    Boolean @default(true) @map("is_active")
+  lastLoginAt DateTime? @map("last_login_at")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  roleId String? @db.Uuid @map("role_id")
+  role   Role?   @relation(fields: [roleId], references: [id])
+
+  // Relations
+  processedOrders Order[] @relation("ProcessedBy")
+  activityLogs    StaffActivityLog[]
+}
+
+model Category {
+  id        String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name      String
+  sortOrder Int     @default(0) @map("sort_order")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  products Product[]
+}
+
+model Product {
+  id          String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String
+  description String?
+  imageUrl    String? @map("image_url")
+  priceCents  Int     @map("price_cents")
+  status      String  @default("available")
+  isArchived  Boolean @default(false) @map("is_archived")
+  archivedAt  DateTime? @map("archived_at")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  categoryId String?  @db.Uuid @map("category_id")
+  category   Category? @relation(fields: [categoryId], references: [id])
+
+  optionGroups ProductOptionGroup[]
+  recipe       ProductRecipe?
+  orderItems   OrderItem[]
+}
+
+model ProductOptionGroup {
+  id         String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name       String
+  type       String  @default("single")
+  required   Boolean @default(false)
+  maxSelect  Int?    @map("max_select")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  productId String @db.Uuid @map("product_id")
+  product   Product @relation(fields: [productId], references: [id])
+
+  options ProductOption[]
+}
+
+model ProductOption {
+  id               String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name             String
+  priceDeltaCents  Int     @default(0) @map("price_delta_cents")
+  sortOrder        Int     @default(0) @map("sort_order")
+
+  groupId String @db.Uuid @map("group_id")
+  group   ProductOptionGroup @relation(fields: [groupId], references: [id])
+}
+
+model Supplier {
+  id         String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name       String
+  contact    Json?   @map("contact_info")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  items InventoryItem[]
+}
+
+model InventoryItem {
+  id                 String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name               String
+  unit               String
+  quantity           Decimal @default(0)
+  lowStockThreshold  Decimal? @map("low_stock_threshold")
+  expiryDays         Int? @map("expiry_days")
+  createdAt          DateTime @default(now()) @map("created_at")
+
+  supplierId String? @db.Uuid @map("supplier_id")
+  supplier   Supplier? @relation(fields: [supplierId], references: [id])
+
+  movements          StockMovement[]
+  recipeIngredients  RecipeIngredient[]
+}
+
+model StockMovement {
+  id              String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  change          Decimal
+  reason          String
+  referenceId     String? @db.Uuid @map("reference_id")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  inventoryItemId String @db.Uuid @map("inventory_item_id")
+  inventoryItem   InventoryItem @relation(fields: [inventoryItemId], references: [id])
+}
+
+// Recipe system for linking products to inventory
+model ProductRecipe {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at")
+
+  productId String @unique @db.Uuid @map("product_id")
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  ingredients RecipeIngredient[]
+}
+
+model RecipeIngredient {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  quantityNeeded Decimal  @map("quantity_needed") // Amount needed per product unit
+  unit           String   // Should match inventory item unit
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  recipeId String        @db.Uuid @map("recipe_id")
+  recipe   ProductRecipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+  inventoryItemId String        @db.Uuid @map("inventory_item_id")
+  inventoryItem   InventoryItem @relation(fields: [inventoryItemId], references: [id])
+
+  @@unique([recipeId, inventoryItemId])
+}
+
+// Order Management System
+model Customer {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String?
+  phone       String?
+  email       String?
+  loyaltyCode String?  @unique @map("loyalty_code")
+  totalOrders Int      @default(0) @map("total_orders")
+  totalSpent  Decimal  @default(0) @map("total_spent")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  orders Order[]
+}
+
+model Order {
+  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orderNumber       String   @unique @map("order_number") // Auto-generated: ORD-001, ORD-002
+  status            String   @default("pending") // "pending", "confirmed", "preparing", "ready", "completed", "cancelled"
+  orderType         String   @default("kiosk") @map("order_type") // "kiosk", "counter", "takeaway", "dine_in"
+  totalCents        Int      @map("total_cents")
+  paymentMethod     String?  @map("payment_method") // "cash", "card", "gcash", "loyalty_points"
+  paymentStatus     String   @default("pending") @map("payment_status") // "pending", "paid", "failed", "refunded"
+  customerNotes     String?  @map("customer_notes")
+  estimatedTime     Int?     @map("estimated_time") // minutes
+  orderedAt         DateTime @default(now()) @map("ordered_at")
+  confirmedAt       DateTime? @map("confirmed_at")
+  completedAt       DateTime? @map("completed_at")
+
+  // Relations
+  customerId String?   @db.Uuid @map("customer_id")
+  customer   Customer? @relation(fields: [customerId], references: [id])
+
+  processedById String? @db.Uuid @map("processed_by_id")
+  processedBy   Staff?  @relation("ProcessedBy", fields: [processedById], references: [id])
+
+  items OrderItem[]
+}
+
+model OrderItem {
+  id             String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  quantity       Int
+  unitPriceCents Int     @map("unit_price_cents")
+  totalCents     Int     @map("total_cents")
+  specialNotes   String? @map("special_notes")
+
+  orderId   String  @db.Uuid @map("order_id")
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  productId String  @db.Uuid @map("product_id")
+  product   Product @relation(fields: [productId], references: [id])
+
+  // For customizations/add-ons (future implementation)
+  customizations Json?
+}
+
+// Enhanced Activity Logging System
+model ActivityLog {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  action      String   // "CREATE", "UPDATE", "DELETE", "ARCHIVE", "RESTORE", "SELL", "ADJUST_STOCK", "ORDER_PLACED", "ORDER_CONFIRMED", etc.
+  entityType  String   @map("entity_type") // "PRODUCT", "INVENTORY", "RECIPE", "ORDER", "CATEGORY", "STAFF", "CUSTOMER"
+  entityId    String?  @db.Uuid @map("entity_id") // ID of the affected entity
+  entityName  String?  @map("entity_name") // Name of the affected entity for easy reference
+  description String   // Human-readable description of what happened
+  metadata    Json?    // Additional data (old values, new values, etc.)
+  ipAddress   String?  @map("ip_address")
+  userAgent   String?  @map("user_agent")
+  userType    String   @default("admin") @map("user_type") // "admin", "cashier", "customer", "system"
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  // User identification
+  userId   String? @db.Uuid @map("user_id")
+  userName String? @map("user_name") // For display purposes
+}
+
+model StaffActivityLog {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  action      String   // "LOGIN", "LOGOUT", "PROCESS_ORDER", "VOID_ORDER", "HANDLE_PAYMENT", etc.
+  description String
+  metadata    Json?
+  ipAddress   String?  @map("ip_address")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  staffId String @db.Uuid @map("staff_id")
+  staff   Staff  @relation(fields: [staffId], references: [id])
+}
+
+
