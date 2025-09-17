@@ -61,8 +61,53 @@ export default async function AdminProductEditPage({ params }: Params) {
               </select>
             </div>
             <div>
-              <label className="block text-sm mb-1">Image URL</label>
-              <input name="image_url" defaultValue={product?.imageUrl ?? ''} className="w-full rounded border px-3 py-2" />
+              <label className="block text-sm mb-1">Image</label>
+              <div className="flex items-center gap-3">
+                <img src={product?.imageUrl || '/placeholder.png'} alt="preview" className="w-16 h-16 rounded object-cover border" />
+                <input name="image_url" defaultValue={product?.imageUrl ?? ''} className="hidden" />
+                <button
+                  type="button"
+                  className="rounded border px-3 py-2 hover:bg-neutral-50"
+                  onClick={async (e) => {
+                    const input = document.createElement('input')
+                    input.type = 'file'
+                    input.accept = 'image/*'
+                    input.onchange = async () => {
+                      const file = input.files?.[0]
+                      if (!file) return
+                      const fd = new FormData()
+                      fd.append('file', file)
+                      const res = await fetch('/api/upload', { method: 'POST', body: fd })
+                      const result = await res.json()
+                      if (res.ok) {
+                        const form = (e.currentTarget as HTMLButtonElement).form as HTMLFormElement
+                        const hidden = form.querySelector('input[name="image_url"]') as HTMLInputElement
+                        hidden.value = result.url
+                        alert('Image uploaded! Click Save to apply.')
+                      } else {
+                        alert(result.error || 'Upload failed')
+                      }
+                    }
+                    input.click()
+                  }}
+                >
+                  Replace Image
+                </button>
+                {product?.imageUrl && (
+                  <button
+                    type="button"
+                    className="rounded border px-3 py-2 hover:bg-neutral-50"
+                    onClick={(e) => {
+                      const form = (e.currentTarget as HTMLButtonElement).form as HTMLFormElement
+                      const hidden = form.querySelector('input[name="image_url"]') as HTMLInputElement
+                      hidden.value = ''
+                      alert('Image will be removed after saving.')
+                    }}
+                  >
+                    Remove Image
+                  </button>
+                )}
+              </div>
             </div>
           </div>
           <div>
