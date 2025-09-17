@@ -1,8 +1,13 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #fafafa;
+  --foreground: #1e293b;
+  --border: #e2e8f0;
+  --sidebar-bg: #f8fafc;
+  --primary: #10b981;
+  --primary-hover: #059669;
+  --secondary: #64748b;
 }
 
 @theme inline {
@@ -12,15 +17,120 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+@media (max-width: 768px) {
+  [data-toggle="sidebar"] {
+    display: inline-flex;
+  }
+  #admin-sidebar-toggle:checked + aside {
+    display: block !important;
+    position: fixed;
+    inset: 56px auto 0 0;
+    z-index: 40;
+    background: var(--sidebar-bg);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  }
+}
+
+/* Supabase-inspired design system */
+.card { 
+  @apply border border-slate-200 rounded-lg bg-white shadow-sm; 
+}
+
+.card-body { 
+  @apply p-6; 
+}
+
+.btn { 
+  @apply inline-flex items-center justify-center rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 hover:border-slate-400 transition-colors cursor-pointer; 
+}
+
+.btn-primary { 
+  @apply bg-emerald-600 border-emerald-600 text-white hover:bg-emerald-700 hover:border-emerald-700 shadow-sm cursor-pointer; 
+}
+
+.btn-ghost { 
+  @apply border-transparent bg-transparent hover:bg-slate-100 cursor-pointer; 
+}
+
+.btn-danger { 
+  @apply border-red-300 bg-red-50 text-red-700 hover:bg-red-100 hover:border-red-400 cursor-pointer; 
+}
+
+.input { 
+  @apply w-full rounded-md border border-slate-300 px-3 py-2 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent; 
+}
+
+.select { 
+  @apply w-full rounded-md border border-slate-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent; 
+}
+
+.table { 
+  @apply w-full text-sm border-collapse table-fixed; 
+}
+
+.thead { 
+  @apply bg-slate-50; 
+}
+
+.th { 
+  @apply text-left px-4 py-3 font-medium text-slate-600 border-b border-slate-200; 
+}
+
+.td { 
+  @apply px-4 py-3 border-b border-slate-100; 
+}
+
+.badge { 
+  @apply inline-flex items-center rounded-full px-2 py-1 text-xs font-medium; 
+}
+
+.badge-success { 
+  @apply bg-emerald-100 text-emerald-800; 
+}
+
+.badge-warning { 
+  @apply bg-amber-100 text-amber-800; 
+}
+
+.badge-danger {
+  @apply bg-red-100 text-red-800;
+}
+
+.badge-neutral { 
+  @apply bg-slate-100 text-slate-600; 
+}
+
+/* Print Styles */
+@media print {
+  body {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+  
+  .no-print {
+    display: none !important;
+  }
+  
+  .print-only {
+    display: block !important;
+  }
+  
+  @page {
+    margin: 0.5in;
+    size: A4;
+  }
+  
+  .print-receipt {
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 20px !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
 }
