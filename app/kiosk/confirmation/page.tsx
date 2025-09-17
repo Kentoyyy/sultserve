@@ -49,11 +49,11 @@ export default function KioskConfirmationPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
+    <div className="min-h-screen bg-white text-slate-900 flex flex-col">
       {/* Header */}
       <div className="bg-white border-b border-slate-200 px-6 py-4">
         <div className="max-w-2xl mx-auto flex items-center gap-4">
-          <div className="w-8 h-8 bg-emerald-600 rounded-lg flex items-center justify-center">
+          <div className="w-8 h-8 bg-amber-700 rounded-lg flex items-center justify-center">
             <span className="text-white font-bold text-sm">S</span>
           </div>
           <div>
@@ -65,11 +65,11 @@ export default function KioskConfirmationPage() {
 
       <div className="flex-1 flex items-center justify-center p-6">
         <div className="max-w-lg w-full">
-          <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
+          <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
             {/* Success Header */}
-            <div className="bg-emerald-50 text-center p-8 border-b border-emerald-100">
-              <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="bg-amber-50 text-center p-8 border-b border-amber-100">
+              <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-amber-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
               </div>
@@ -110,7 +110,7 @@ export default function KioskConfirmationPage() {
                 <div className="border-t border-slate-200 pt-4 mb-6">
                   <div className="flex justify-between items-center text-xl font-bold text-slate-900">
                     <span>Total Paid:</span>
-                    <span className="text-emerald-600">₱{(orderDetails.totalAmount / 100).toFixed(2)}</span>
+                    <span className="text-amber-700">₱{(orderDetails.totalAmount / 100).toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between items-center text-sm text-slate-600 mt-1">
                     <span>Payment Method:</span>
@@ -122,7 +122,7 @@ export default function KioskConfirmationPage() {
               {/* Status and Instructions */}
               <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
                 <div className="flex items-start gap-3">
-                  <div className="text-amber-600 text-xl">⏳</div>
+                  <div className="text-amber-700 text-xl">⏳</div>
                   <div>
                     <div className="font-semibold text-amber-800">Order Status: Pending</div>
                     <div className="text-sm text-amber-700 mt-1">
@@ -136,13 +136,13 @@ export default function KioskConfirmationPage() {
               <div className="flex flex-col gap-3">
                 <button
                   onClick={() => router.push(`/kiosk/track/${orderDetails.orderNumber}`)}
-                  className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                  className="w-full bg-slate-900 text-white py-3 rounded-lg font-semibold hover:bg-slate-800 transition-colors"
                 >
                   📱 Track My Order
                 </button>
                 <button
                   onClick={startNewOrder}
-                  className="w-full bg-emerald-600 text-white py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-colors"
+                  className="w-full bg-amber-600 text-white py-3 rounded-lg font-semibold hover:bg-amber-700 transition-colors"
                 >
                   🛒 Place New Order
                 </button>

@@ -24,6 +24,14 @@ async function getProducts() {
     let canMake = 0
     let hasRecipe = !!p.recipe
     let limitingIngredient = null
+    const ingredients = p.recipe?.ingredients.map((ing) => ({
+      id: ing.id,
+      inventoryItemId: ing.inventoryItem.id,
+      name: ing.inventoryItem.name,
+      quantityNeeded: Number(ing.quantityNeeded),
+      unit: ing.unit,
+      available: Number(ing.inventoryItem.quantity)
+    })) || []
     
     if (p.recipe && p.recipe.ingredients.length > 0) {
       canMake = Math.min(...p.recipe.ingredients.map(ing => {
@@ -49,7 +57,8 @@ async function getProducts() {
       status: p.status,
       hasRecipe,
       canMake,
-      limitingIngredient
+      limitingIngredient,
+      ingredients
     }
   })
 }

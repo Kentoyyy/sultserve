@@ -104,24 +104,24 @@ export default function CashierDashboard() {
 
   const getStatusInfo = (status: string) => {
     const statusMap = {
-      'pending': { 
-        label: 'Pending', 
-        color: 'bg-amber-100 text-amber-800 border-amber-200',
+      'pending': {
+        label: 'Pending',
+        color: 'bg-slate-100 text-slate-700 border-slate-200',
         icon: '⏳'
       },
-      'preparing': { 
-        label: 'Preparing', 
-        color: 'bg-blue-100 text-blue-800 border-blue-200',
+      'preparing': {
+        label: 'Preparing',
+        color: 'bg-slate-100 text-slate-700 border-slate-200',
         icon: '👨‍🍳'
       },
-      'ready': { 
-        label: 'Ready', 
-        color: 'bg-emerald-100 text-emerald-800 border-emerald-200',
+      'ready': {
+        label: 'Ready',
+        color: 'bg-slate-100 text-slate-700 border-slate-200',
         icon: '✅'
       },
-      'completed': { 
-        label: 'Completed', 
-        color: 'bg-slate-100 text-slate-600 border-slate-200',
+      'completed': {
+        label: 'Completed',
+        color: 'bg-slate-100 text-slate-700 border-slate-200',
         icon: '🎉'
       }
     }
@@ -185,17 +185,17 @@ export default function CashierDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-white text-slate-900">
       {/* Notification Toast */}
       {notification && (
-        <div className="fixed top-4 right-4 z-50 bg-emerald-600 text-white px-6 py-3 rounded-lg shadow-lg animate-bounce">
+        <div className="fixed top-4 right-4 z-50 bg-amber-600 text-white px-6 py-3 rounded-lg shadow-lg animate-bounce">
           {notification}
         </div>
       )}
 
       <div className="max-w-7xl mx-auto p-6 space-y-6">
         {/* Header */}
-        <div className="bg-white rounded-2xl border border-slate-200 p-6">
+        <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
           <div className="flex items-center justify-between mb-6">
             <div>
               <h1 className="text-3xl font-bold text-slate-900">Order Management</h1>
@@ -203,7 +203,7 @@ export default function CashierDashboard() {
             </div>
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></div>
                 <span className="text-sm text-slate-600">{orders.length} total orders</span>
               </div>
               <div className="text-xs text-slate-400">
@@ -218,7 +218,7 @@ export default function CashierDashboard() {
               onClick={() => setActiveTab('orders')}
               className={`flex-1 px-4 py-2 rounded-md font-medium transition-all ${
                 activeTab === 'orders'
-                  ? 'bg-white text-slate-900 shadow-sm'
+                  ? 'bg-white text-slate-900 shadow-sm border border-amber-200'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
@@ -228,7 +228,7 @@ export default function CashierDashboard() {
               onClick={() => setActiveTab('completed')}
               className={`flex-1 px-4 py-2 rounded-md font-medium transition-all ${
                 activeTab === 'completed'
-                  ? 'bg-white text-slate-900 shadow-sm'
+                  ? 'bg-white text-slate-900 shadow-sm border border-amber-200'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
@@ -304,7 +304,7 @@ export default function CashierDashboard() {
               {activeOrders.map((order) => {
                 const statusInfo = getStatusInfo(order.status)
                 return (
-                  <div key={order.id} className="bg-white rounded-2xl border border-slate-200 hover:border-slate-300 transition-all duration-200 overflow-hidden">
+                  <div key={order.id} className="bg-white rounded-2xl border border-slate-200 hover:border-amber-200 transition-all duration-200 overflow-hidden shadow-sm">
                     {/* Order Header */}
                     <div className="bg-slate-50 border-b border-slate-200 p-4">
                       <div className="flex items-center justify-between">
@@ -353,7 +353,7 @@ export default function CashierDashboard() {
               })}
               </div>
             ) : (
-              <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center">
+              <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center shadow-sm">
                 <div className="text-6xl mb-4 text-slate-300">📋</div>
                 <h3 className="text-xl font-semibold text-slate-900 mb-2">No active orders</h3>
                 <p className="text-slate-600">New orders will appear here when customers place them</p>
@@ -366,7 +366,7 @@ export default function CashierDashboard() {
         {activeTab === 'completed' && (
           <div>
             {/* Date Filter */}
-            <div className="bg-white rounded-2xl border border-slate-200 p-4 mb-6">
+            <div className="bg-white rounded-2xl border border-slate-200 p-4 mb-6 shadow-sm">
               <div className="flex items-center gap-4">
                 <label className="text-sm font-medium text-slate-700">
                   Filter by Date:
@@ -375,7 +375,7 @@ export default function CashierDashboard() {
                   type="date"
                   value={dateFilter}
                   onChange={(e) => setDateFilter(e.target.value)}
-                  className="px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                  className="px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                 />
                 <div className="text-sm text-slate-500">
                   Showing {completedOrders.length} completed orders
@@ -386,7 +386,7 @@ export default function CashierDashboard() {
             {completedOrders.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {completedOrders.map((order) => (
-                  <div key={order.id} className="bg-white rounded-2xl border border-slate-200 p-6">
+                  <div key={order.id} className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
                     <div className="flex items-center justify-between mb-4">
                       <h3 className="font-bold text-slate-900">#{order.orderNumber}</h3>
                       <div className="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-medium">
@@ -426,7 +426,7 @@ export default function CashierDashboard() {
                 ))}
               </div>
             ) : (
-              <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center">
+              <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center shadow-sm">
                 <div className="text-6xl mb-4 text-slate-300">📅</div>
                 <h3 className="text-xl font-semibold text-slate-900 mb-2">No completed orders</h3>
                 <p className="text-slate-600">

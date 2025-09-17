@@ -50,7 +50,7 @@ export default async function AdminProductEditPage({ params }: Params) {
           </div>
           <div>
             <label className="block text-sm mb-1">Price (₱)</label>
-            <input type="number" step="0.01" name="price" defaultValue={product ? (product.price_cents/100).toFixed(2) : ''} className="w-full rounded border px-3 py-2" />
+            <input type="number" step="0.01" name="price" defaultValue={product ? (product.priceCents/100).toFixed(2) : ''} className="w-full rounded border px-3 py-2" />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
@@ -62,7 +62,7 @@ export default async function AdminProductEditPage({ params }: Params) {
             </div>
             <div>
               <label className="block text-sm mb-1">Image URL</label>
-              <input name="image_url" defaultValue={product?.image_url ?? ''} className="w-full rounded border px-3 py-2" />
+              <input name="image_url" defaultValue={product?.imageUrl ?? ''} className="w-full rounded border px-3 py-2" />
             </div>
           </div>
           <div>

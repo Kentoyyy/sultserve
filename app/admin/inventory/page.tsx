@@ -3,16 +3,47 @@ import { prisma } from '@/lib/prisma'
 
 async function getItems() {
   const itemsRaw = await prisma.inventoryItem.findMany({
-    select: { id: true, name: true, unit: true, quantity: true, lowStockThreshold: true },
-    orderBy: { name: 'asc' }
+    include: {
+      recipeIngredients: {
+        include: {
+          recipe: {
+            include: {
+              product: {
+                include: {
+                  category: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    orderBy: { name: 'asc' },
   })
-  const items = itemsRaw.map((it) => ({
-    id: it.id,
-    name: it.name,
-    unit: it.unit,
-    quantity: Number(it.quantity),
-    lowStockThreshold: it.lowStockThreshold === null ? null : Number(it.lowStockThreshold)
-  }))
+
+  const items = itemsRaw.map((it) => {
+    const usedByMap = new Map<string, { id: string; name: string; category: string | null }>()
+    for (const ri of it.recipeIngredients) {
+      const product = ri.recipe.product
+      if (product) {
+        usedByMap.set(product.id, {
+          id: product.id,
+          name: product.name,
+          category: product.category?.name ?? null,
+        })
+      }
+    }
+
+    return {
+      id: it.id,
+      name: it.name,
+      unit: it.unit,
+      quantity: Number(it.quantity),
+      lowStockThreshold: it.lowStockThreshold === null ? null : Number(it.lowStockThreshold),
+      usedBy: Array.from(usedByMap.values()),
+    }
+  })
+
   return items
 }
 

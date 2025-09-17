@@ -106,10 +106,10 @@ export default function CashierProductsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-white text-slate-900">
       <div className="max-w-7xl mx-auto p-6 space-y-6">
         {/* Header */}
-        <div className="bg-white rounded-2xl border border-slate-200 p-6">
+        <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
           <div className="flex items-center justify-between mb-6">
             <div>
               <h1 className="text-3xl font-bold text-slate-900">Products Menu</h1>
@@ -117,7 +117,7 @@ export default function CashierProductsPage() {
             </div>
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></div>
                 <span className="text-sm text-slate-600">{availableProducts.length} available</span>
               </div>
               <div className="text-xs text-slate-400">
@@ -132,7 +132,7 @@ export default function CashierProductsPage() {
               onClick={() => setActiveTab('available')}
               className={`flex-1 px-4 py-2 rounded-md font-medium transition-all ${
                 activeTab === 'available'
-                  ? 'bg-white text-slate-900 shadow-sm'
+                  ? 'bg-white text-slate-900 shadow-sm border border-amber-200'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
@@ -142,7 +142,7 @@ export default function CashierProductsPage() {
               onClick={() => setActiveTab('all')}
               className={`flex-1 px-4 py-2 rounded-md font-medium transition-all ${
                 activeTab === 'all'
-                  ? 'bg-white text-slate-900 shadow-sm'
+                  ? 'bg-white text-slate-900 shadow-sm border border-amber-200'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
@@ -158,7 +158,7 @@ export default function CashierProductsPage() {
                 placeholder="Search products..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
               />
             </div>
             <div className="flex items-center gap-4">
@@ -166,7 +166,7 @@ export default function CashierProductsPage() {
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                className="px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
               >
                 <option value="all">All Categories</option>
                 {categories.map((category) => (
@@ -188,14 +188,14 @@ export default function CashierProductsPage() {
             {filteredProducts.map((product) => {
               const stockInfo = getStockInfo(product)
               return (
-                <div key={product.id} className={`bg-white rounded-2xl border overflow-hidden transition-all duration-200 ${
+                <div key={product.id} className={`bg-white rounded-2xl border overflow-hidden transition-all duration-200 shadow-sm ${
                   product.stockStatus === 'out_of_stock' 
                     ? 'border-red-200 opacity-75' 
-                    : 'border-slate-200 hover:border-slate-300 hover:shadow-lg'
+                    : 'border-slate-200 hover:border-amber-200'
                 }`}>
                   {/* Product Image */}
                   <div className="relative">
-                    <div className="h-48 bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center">
+                    <div className="h-48 bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
                       <div className={`text-4xl ${product.stockStatus === 'out_of_stock' ? 'text-slate-300' : 'text-slate-400'}`}>
                         {product.category === 'Coffee' ? '☕' :
                          product.category === 'Milk Tea & Tea' ? '🧋' :

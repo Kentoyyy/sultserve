@@ -23,6 +23,8 @@ export function ActivityLogsPageClient({ logs }: Props) {
   const [entityFilter, setEntityFilter] = useState<string>('')
   const [searchTerm, setSearchTerm] = useState<string>('')
   const [dateFilter, setDateFilter] = useState<string>('')
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 5
 
   // Get unique actions and entity types for filters
   const uniqueActions = useMemo(() => {
@@ -51,6 +53,29 @@ export function ActivityLogsPageClient({ logs }: Props) {
       return matchesAction && matchesEntity && matchesSearch && matchesDate
     })
   }, [logs, actionFilter, entityFilter, searchTerm, dateFilter])
+
+  // Pagination logic
+  const totalPages = Math.ceil(filteredLogs.length / itemsPerPage)
+  const startIndex = (currentPage - 1) * itemsPerPage
+  const endIndex = startIndex + itemsPerPage
+  const currentLogs = filteredLogs.slice(startIndex, endIndex)
+
+  // Reset to first page when filters change
+  const resetPage = () => {
+    setCurrentPage(1)
+  }
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1)
+    }
+  }
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1)
+    }
+  }
 
   const getActionBadge = (action: string) => {
     const badgeClasses = {
@@ -82,17 +107,18 @@ export function ActivityLogsPageClient({ logs }: Props) {
     setEntityFilter('')
     setSearchTerm('')
     setDateFilter('')
+    setCurrentPage(1)
   }
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">Activity Logs</h1>
-          <p className="text-slate-600 mt-1">Track all system activities and changes</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">Activity Logs</h1>
+          <p className="text-slate-600 mt-1 text-sm sm:text-base">Track all system activities and changes</p>
         </div>
         <div className="text-sm text-slate-500">
-          Showing {filteredLogs.length} of {logs.length} activities
+          Showing {startIndex + 1}-{Math.min(endIndex, filteredLogs.length)} of {filteredLogs.length} activities
         </div>
       </div>
 
@@ -103,7 +129,10 @@ export function ActivityLogsPageClient({ logs }: Props) {
             <label className="block text-sm font-medium text-slate-700 mb-1">Action</label>
             <select 
               value={actionFilter} 
-              onChange={(e) => setActionFilter(e.target.value)}
+              onChange={(e) => {
+                setActionFilter(e.target.value)
+                resetPage()
+              }}
               className="select"
             >
               <option value="">All Actions</option>
@@ -117,7 +146,10 @@ export function ActivityLogsPageClient({ logs }: Props) {
             <label className="block text-sm font-medium text-slate-700 mb-1">Entity Type</label>
             <select 
               value={entityFilter} 
-              onChange={(e) => setEntityFilter(e.target.value)}
+              onChange={(e) => {
+                setEntityFilter(e.target.value)
+                resetPage()
+              }}
               className="select"
             >
               <option value="">All Types</option>
@@ -132,7 +164,10 @@ export function ActivityLogsPageClient({ logs }: Props) {
             <input 
               type="text"
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => {
+                setSearchTerm(e.target.value)
+                resetPage()
+              }}
               placeholder="Search descriptions..."
               className="input"
             />
@@ -143,7 +178,10 @@ export function ActivityLogsPageClient({ logs }: Props) {
             <input 
               type="date"
               value={dateFilter}
-              onChange={(e) => setDateFilter(e.target.value)}
+              onChange={(e) => {
+                setDateFilter(e.target.value)
+                resetPage()
+              }}
               className="input"
             />
           </div>
@@ -160,9 +198,9 @@ export function ActivityLogsPageClient({ logs }: Props) {
       </div>
 
       {/* Activity Logs Table */}
-      <div className="card">
-        <div className="divide-y divide-slate-100">
-          {filteredLogs.map((log) => (
+      <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+        <div className="divide-y divide-slate-200">
+          {currentLogs.map((log) => (
             <div key={log.id} className="p-4 hover:bg-slate-50">
               <div className="flex items-start justify-between">
                 <div className="flex items-start gap-3 flex-1">
@@ -217,16 +255,18 @@ export function ActivityLogsPageClient({ logs }: Props) {
             </div>
           ))}
 
-          {filteredLogs.length === 0 && (
-            <div className="py-16 text-center text-slate-500">
+          {currentLogs.length === 0 && (
+            <div className="py-12 text-center">
               <div className="flex flex-col items-center">
-                <svg className="w-16 h-16 text-slate-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-                <h3 className="text-xl font-medium text-slate-900 mb-2">
+                <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-4">
+                  <svg className="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </div>
+                <p className="text-lg font-medium text-slate-900 mb-2">
                   {logs.length === 0 ? 'No activity logs yet' : 'No logs match your filters'}
-                </h3>
-                <p className="text-slate-500 max-w-sm">
+                </p>
+                <p className="text-slate-500">
                   {logs.length === 0 
                     ? 'Activity logs will appear here as you use the system.'
                     : 'Try adjusting your filters to see more results.'
@@ -235,7 +275,7 @@ export function ActivityLogsPageClient({ logs }: Props) {
                 {logs.length > 0 && (
                   <button 
                     onClick={clearFilters}
-                    className="mt-4 btn-primary"
+                    className="mt-4 bg-amber-600 text-white px-4 py-2 rounded-lg hover:bg-amber-700 transition-colors font-medium text-sm"
                   >
                     Clear All Filters
                   </button>
@@ -244,8 +284,38 @@ export function ActivityLogsPageClient({ logs }: Props) {
             </div>
           )}
         </div>
+
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <div className="flex justify-center items-center space-x-2 px-6 py-4 border-t border-slate-200 bg-slate-50">
+            <button 
+              onClick={handlePrevPage}
+              disabled={currentPage === 1}
+              className="w-8 h-8 bg-slate-200 text-slate-600 rounded-full hover:bg-slate-300 transition-colors flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            
+            <span className="text-sm text-slate-600 px-3">
+              {currentPage} / {totalPages}
+            </span>
+            
+            <button 
+              onClick={handleNextPage}
+              disabled={currentPage === totalPages}
+              className="w-8 h-8 bg-amber-600 text-white rounded-full hover:bg-amber-700 transition-colors flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          </div>
+        )}
       </div>
     </div>
   )
 }
+
 

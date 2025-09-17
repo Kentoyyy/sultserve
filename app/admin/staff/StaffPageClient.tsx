@@ -44,7 +44,24 @@ export function StaffPageClient({ staff, roles }: Props) {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [selectedStaff, setSelectedStaff] = useState<Staff | null>(null)
   const [staffToDelete, setStaffToDelete] = useState<Staff | null>(null)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [roleFilter, setRoleFilter] = useState('all')
+  const [statusFilter, setStatusFilter] = useState('all')
   const router = useRouter()
+
+  // Filter staff based on search and filters
+  const filteredStaff = staff.filter(member => {
+    const matchesSearch = member.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         member.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         member.username?.toLowerCase().includes(searchTerm.toLowerCase())
+    
+    const matchesRole = roleFilter === 'all' || member.role?.code === roleFilter
+    const matchesStatus = statusFilter === 'all' || 
+                         (statusFilter === 'active' && member.isActive) ||
+                         (statusFilter === 'inactive' && !member.isActive)
+    
+    return matchesSearch && matchesRole && matchesStatus
+  })
 
   const createStaff = async (formData: FormData) => {
     const data = {
@@ -167,103 +184,190 @@ export function StaffPageClient({ staff, roles }: Props) {
 
   return (
     <div className="space-y-6">
+      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-900">Staff Management</h1>
+          <h1 className="text-3xl font-bold text-slate-900">Staff Management</h1>
           <p className="text-slate-600 mt-1">Manage staff accounts and roles</p>
         </div>
         <button 
           onClick={() => setIsAddModalOpen(true)}
-          className="btn-primary"
+          className="flex items-center gap-2 px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors font-medium shadow-sm"
         >
-          <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
           </svg>
           Add Staff
         </button>
       </div>
 
-      <div className="card">
-        {/* Header */}
-        <div className="grid grid-cols-7 gap-4 p-4 bg-slate-50 border-b font-medium text-slate-600 text-sm">
-          <div>Staff Member</div>
-          <div>Contact</div>
-          <div className="text-center">Role</div>
-          <div className="text-center">Status</div>
-          <div className="text-center">Orders</div>
-          <div className="text-center">Last Login</div>
-          <div className="text-center">Actions</div>
+      {/* Search and Filters */}
+      <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* Search */}
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg className="h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+            <input
+              type="text"
+              placeholder="Search staff members..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+            />
+          </div>
+
+          {/* Role Filter */}
+          <select
+            value={roleFilter}
+            onChange={(e) => setRoleFilter(e.target.value)}
+            className="px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+          >
+            <option value="all">All Roles</option>
+            {roles.map(role => (
+              <option key={role.id} value={role.code}>{role.name}</option>
+            ))}
+          </select>
+
+          {/* Status Filter */}
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm"
+          >
+            <option value="all">All Status</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
         </div>
 
-        {/* Rows */}
-        <div className="divide-y divide-slate-100">
-          {staff.map((member) => (
-            <div key={member.id} className="grid grid-cols-7 gap-4 p-4 hover:bg-slate-50 items-center">
-              <div>
-                <div className="font-medium text-slate-900">{member.fullName}</div>
-                <div className="text-sm text-slate-500">@{member.username || 'no-username'}</div>
-              </div>
-              <div>
-                <div className="text-sm text-slate-900">{member.email}</div>
-                {member.phone && (
-                  <div className="text-sm text-slate-500">{member.phone}</div>
-                )}
-              </div>
-              <div className="text-center">
-                {member.role ? (
-                  <span className={getRoleBadgeColor(member.role.code)}>
-                    {member.role.name}
+        {/* Results Count */}
+        <div className="mt-4 text-sm text-slate-600">
+          Showing {filteredStaff.length} of {staff.length} staff members
+        </div>
+      </div>
+
+      {/* Staff Table */}
+      <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+        {/* Table Header */}
+        <div className="bg-slate-50 px-6 py-4 border-b border-slate-200">
+          <div className="grid grid-cols-12 gap-4 text-xs font-semibold text-slate-600 uppercase tracking-wider">
+            <div className="col-span-3">Staff Member</div>
+            <div className="col-span-2">Contact</div>
+            <div className="col-span-2 text-center">Role</div>
+            <div className="col-span-1 text-center">Status</div>
+            <div className="col-span-1 text-center">Orders</div>
+            <div className="col-span-1 text-center">Last Login</div>
+            <div className="col-span-2 text-center">Actions</div>
+          </div>
+        </div>
+
+        {/* Table Body */}
+        <div className="divide-y divide-slate-200">
+          {filteredStaff.map((member) => (
+            <div key={member.id} className="px-6 py-4 hover:bg-slate-50 transition-colors">
+              <div className="grid grid-cols-12 gap-4 items-center">
+                {/* Staff Member */}
+                <div className="col-span-3">
+                  <div className="font-medium text-slate-900">{member.fullName}</div>
+                  <div className="text-sm text-slate-500">@{member.username || 'no-username'}</div>
+                </div>
+
+                {/* Contact */}
+                <div className="col-span-2">
+                  <div className="text-sm text-slate-900">{member.email}</div>
+                  {member.phone && (
+                    <div className="text-sm text-slate-500">{member.phone}</div>
+                  )}
+                </div>
+
+                {/* Role */}
+                <div className="col-span-2 text-center">
+                  {member.role ? (
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                      member.role.code === 'admin' ? 'bg-red-100 text-red-800' :
+                      member.role.code === 'manager' ? 'bg-blue-100 text-blue-800' :
+                      member.role.code === 'cashier' ? 'bg-green-100 text-green-800' :
+                      member.role.code === 'inventory_clerk' ? 'bg-purple-100 text-purple-800' :
+                      'bg-slate-100 text-slate-800'
+                    }`}>
+                      {member.role.name}
+                    </span>
+                  ) : (
+                    <span className="text-slate-400 text-sm">No role</span>
+                  )}
+                </div>
+
+                {/* Status */}
+                <div className="col-span-1 text-center">
+                  <button
+                    onClick={() => toggleStaffStatus(member)}
+                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium transition-colors ${
+                      member.isActive 
+                        ? 'bg-emerald-100 text-emerald-800 hover:bg-emerald-200' 
+                        : 'bg-slate-100 text-slate-800 hover:bg-slate-200'
+                    }`}
+                  >
+                    {member.isActive ? 'Active' : 'Inactive'}
+                  </button>
+                </div>
+
+                {/* Orders */}
+                <div className="col-span-1 text-center">
+                  <span className="text-slate-900 font-medium">{member.stats.processedOrders}</span>
+                </div>
+
+                {/* Last Login */}
+                <div className="col-span-1 text-center">
+                  <span className="text-sm text-slate-600">
+                    {member.lastLoginAt ? 
+                      new Date(member.lastLoginAt).toLocaleDateString() : 
+                      'Never'
+                    }
                   </span>
-                ) : (
-                  <span className="text-slate-400">No role</span>
-                )}
-              </div>
-              <div className="text-center">
-                <button
-                  onClick={() => toggleStaffStatus(member)}
-                  className={`badge ${member.isActive ? 'badge-success' : 'badge-neutral'}`}
-                >
-                  {member.isActive ? 'Active' : 'Inactive'}
-                </button>
-              </div>
-              <div className="text-center">
-                <span className="text-slate-900">{member.stats.processedOrders}</span>
-              </div>
-              <div className="text-center">
-                <span className="text-sm text-slate-600">
-                  {member.lastLoginAt ? 
-                    new Date(member.lastLoginAt).toLocaleDateString() : 
-                    'Never'
-                  }
-                </span>
-              </div>
-              <div className="text-center">
-                <div className="flex gap-2 justify-center">
-                  <button 
-                    onClick={() => openEditModal(member)}
-                    className="btn btn-ghost text-sm"
-                  >
-                    Edit
-                  </button>
-                  <button 
-                    onClick={() => openDeleteModal(member)}
-                    className="btn btn-ghost text-sm text-red-600 hover:text-red-700 hover:bg-red-50"
-                  >
-                    Delete
-                  </button>
+                </div>
+
+                {/* Actions */}
+                <div className="col-span-2 text-center">
+                  <div className="flex gap-2 justify-center">
+                    <button 
+                      onClick={() => openEditModal(member)}
+                      className="text-amber-600 hover:text-amber-700 hover:bg-amber-50 px-2 py-1 rounded text-sm font-medium transition-colors"
+                    >
+                      Edit
+                    </button>
+                    <button 
+                      onClick={() => openDeleteModal(member)}
+                      className="text-red-600 hover:text-red-700 hover:bg-red-50 px-2 py-1 rounded text-sm font-medium transition-colors"
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
           ))}
 
-          {staff.length === 0 && (
-            <div className="py-12 text-center text-slate-500">
+          {filteredStaff.length === 0 && (
+            <div className="py-12 text-center">
               <div className="flex flex-col items-center">
-                <svg className="w-12 h-12 text-slate-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
-                </svg>
-                <p className="text-lg font-medium text-slate-900">No staff members yet</p>
-                <p className="text-slate-500">Get started by adding your first staff member</p>
+                <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-4">
+                  <svg className="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+                  </svg>
+                </div>
+                <p className="text-lg font-medium text-slate-900 mb-2">
+                  {searchTerm || roleFilter !== 'all' || statusFilter !== 'all' ? 'No staff found' : 'No staff members yet'}
+                </p>
+                <p className="text-slate-500">
+                  {searchTerm || roleFilter !== 'all' || statusFilter !== 'all' 
+                    ? 'Try adjusting your search or filters' 
+                    : 'Get started by adding your first staff member'
+                  }
+                </p>
               </div>
             </div>
           )}
@@ -272,152 +376,214 @@ export function StaffPageClient({ staff, roles }: Props) {
 
       {/* Add Staff Modal */}
       <Modal open={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} title="Add Staff Member">
-        <form action={createStaff} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">Full Name</label>
-            <input 
-              name="fullName" 
-              className="input" 
-              placeholder="Enter full name"
-              required 
-            />
+        <div className="space-y-6">
+          {/* Header */}
+          <div className="border-b border-slate-200 pb-4">
+            <h3 className="text-lg font-semibold text-slate-900">Add Staff Member</h3>
+            <p className="text-sm text-slate-600 mt-1">Create a new staff account with role-based access</p>
           </div>
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">Email</label>
-            <input 
-              name="email" 
-              type="email"
-              className="input" 
-              placeholder="Enter email address"
-              required 
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">Username</label>
-            <input 
-              name="username" 
-              className="input" 
-              placeholder="Enter username"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">Phone</label>
-            <input 
-              name="phone" 
-              className="input" 
-              placeholder="Enter phone number"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">Password</label>
-            <input 
-              name="password" 
-              type="password"
-              className="input" 
-              placeholder="Enter password"
-              required 
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">Role</label>
-            <select name="roleId" className="select" required>
-              <option value="">Select a role</option>
-              {roles.map(role => (
-                <option key={role.id} value={role.id}>
-                  {role.name} - {role.description}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="flex gap-3 pt-4">
-            <button type="submit" className="btn-primary flex-1">
-              Create Staff
-            </button>
-            <button 
-              type="button" 
-              onClick={() => setIsAddModalOpen(false)}
-              className="btn flex-1"
-            >
-              Cancel
-            </button>
-          </div>
-        </form>
-      </Modal>
 
-      {/* Edit Staff Modal */}
-      <Modal open={isEditModalOpen} onClose={() => {setIsEditModalOpen(false); setSelectedStaff(null)}} title="Edit Staff Member">
-        {selectedStaff && (
-          <form action={updateStaff} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">Full Name</label>
-              <input 
-                name="fullName" 
-                defaultValue={selectedStaff.fullName}
-                className="input" 
-                required 
-              />
+          <form action={createStaff} className="space-y-6">
+            {/* Personal Information */}
+            <div className="space-y-4">
+              <h4 className="text-sm font-semibold text-slate-700 uppercase tracking-wider">Personal Information</h4>
+              
+              <div className="space-y-2">
+                <label className="block text-sm font-semibold text-slate-700">Full Name</label>
+                <input 
+                  name="fullName" 
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm" 
+                  placeholder="Enter full name"
+                  required 
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="block text-sm font-semibold text-slate-700">Email Address</label>
+                <input 
+                  name="email" 
+                  type="email"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm" 
+                  placeholder="Enter email address"
+                  required 
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="block text-sm font-semibold text-slate-700">Phone Number</label>
+                <input 
+                  name="phone" 
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm" 
+                  placeholder="Enter phone number (optional)"
+                />
+              </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">Email</label>
-              <input 
-                name="email" 
-                type="email"
-                defaultValue={selectedStaff.email}
-                className="input" 
-                required 
-              />
+
+            {/* Account Information */}
+            <div className="space-y-4">
+              <h4 className="text-sm font-semibold text-slate-700 uppercase tracking-wider">Account Information</h4>
+              
+              <div className="space-y-2">
+                <label className="block text-sm font-semibold text-slate-700">Username</label>
+                <input 
+                  name="username" 
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm" 
+                  placeholder="Enter username (optional)"
+                />
+                <p className="text-xs text-slate-500">Leave empty to use email as username</p>
+              </div>
+
+              <div className="space-y-2">
+                <label className="block text-sm font-semibold text-slate-700">Password</label>
+                <input 
+                  name="password" 
+                  type="password"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm" 
+                  placeholder="Enter password"
+                  required 
+                />
+                <p className="text-xs text-slate-500">Minimum 6 characters</p>
+              </div>
+
+              <div className="space-y-2">
+                <label className="block text-sm font-semibold text-slate-700">Role</label>
+                <select name="roleId" className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm" required>
+                  <option value="">Select a role</option>
+                  {roles.map(role => (
+                    <option key={role.id} value={role.id}>
+                      {role.name} - {role.description}
+                    </option>
+                  ))}
+                </select>
+                <p className="text-xs text-slate-500">Choose the appropriate role for this staff member</p>
+              </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">Username</label>
-              <input 
-                name="username" 
-                defaultValue={selectedStaff.username || ''}
-                className="input" 
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">Phone</label>
-              <input 
-                name="phone" 
-                defaultValue={selectedStaff.phone || ''}
-                className="input" 
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">Role</label>
-              <select name="roleId" defaultValue={selectedStaff.role?.id || ''} className="select" required>
-                <option value="">Select a role</option>
-                {roles.map(role => (
-                  <option key={role.id} value={role.id}>
-                    {role.name} - {role.description}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="flex items-center">
-              <input 
-                name="isActive"
-                type="checkbox" 
-                defaultChecked={selectedStaff.isActive}
-                className="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded" 
-              />
-              <label className="ml-2 block text-sm text-slate-700">
-                Active (can login and access system)
-              </label>
-            </div>
-            <div className="flex gap-3 pt-4">
-              <button type="submit" className="btn-primary flex-1">
-                Update Staff
+
+            {/* Action Buttons */}
+            <div className="flex gap-3 pt-4 border-t border-slate-200">
+              <button 
+                type="submit" 
+                className="flex-1 bg-amber-600 text-white px-4 py-2 rounded-lg hover:bg-amber-700 transition-colors font-medium text-sm"
+              >
+                Create Staff
               </button>
               <button 
                 type="button" 
-                onClick={() => {setIsEditModalOpen(false); setSelectedStaff(null)}}
-                className="btn flex-1"
+                onClick={() => setIsAddModalOpen(false)}
+                className="flex-1 bg-slate-100 text-slate-700 px-4 py-2 rounded-lg hover:bg-slate-200 transition-colors font-medium text-sm"
               >
                 Cancel
               </button>
             </div>
           </form>
+        </div>
+      </Modal>
+
+      {/* Edit Staff Modal */}
+      <Modal open={isEditModalOpen} onClose={() => {setIsEditModalOpen(false); setSelectedStaff(null)}} title="Edit Staff Member">
+        {selectedStaff && (
+          <div className="space-y-6">
+            {/* Header */}
+            <div className="border-b border-slate-200 pb-4">
+              <h3 className="text-lg font-semibold text-slate-900">Edit Staff Member</h3>
+              <p className="text-sm text-slate-600 mt-1">Update staff information and permissions</p>
+            </div>
+
+            <form action={updateStaff} className="space-y-6">
+              {/* Personal Information */}
+              <div className="space-y-4">
+                <h4 className="text-sm font-semibold text-slate-700 uppercase tracking-wider">Personal Information</h4>
+                
+                <div className="space-y-2">
+                  <label className="block text-sm font-semibold text-slate-700">Full Name</label>
+                  <input 
+                    name="fullName" 
+                    defaultValue={selectedStaff.fullName}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm" 
+                    required 
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="block text-sm font-semibold text-slate-700">Email Address</label>
+                  <input 
+                    name="email" 
+                    type="email"
+                    defaultValue={selectedStaff.email}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm" 
+                    required 
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="block text-sm font-semibold text-slate-700">Phone Number</label>
+                  <input 
+                    name="phone" 
+                    defaultValue={selectedStaff.phone || ''}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm" 
+                  />
+                </div>
+              </div>
+
+              {/* Account Information */}
+              <div className="space-y-4">
+                <h4 className="text-sm font-semibold text-slate-700 uppercase tracking-wider">Account Information</h4>
+                
+                <div className="space-y-2">
+                  <label className="block text-sm font-semibold text-slate-700">Username</label>
+                  <input 
+                    name="username" 
+                    defaultValue={selectedStaff.username || ''}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm" 
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="block text-sm font-semibold text-slate-700">Role</label>
+                  <select name="roleId" defaultValue={selectedStaff.role?.id || ''} className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 text-sm" required>
+                    <option value="">Select a role</option>
+                    {roles.map(role => (
+                      <option key={role.id} value={role.id}>
+                        {role.name} - {role.description}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="flex items-center space-x-3">
+                    <input 
+                      name="isActive"
+                      type="checkbox" 
+                      defaultChecked={selectedStaff.isActive}
+                      className="h-4 w-4 text-amber-600 focus:ring-amber-500 border-slate-300 rounded" 
+                    />
+                    <div>
+                      <span className="text-sm font-semibold text-slate-700">Active Status</span>
+                      <p className="text-xs text-slate-500">Allow this staff member to login and access the system</p>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-3 pt-4 border-t border-slate-200">
+                <button 
+                  type="submit" 
+                  className="flex-1 bg-amber-600 text-white px-4 py-2 rounded-lg hover:bg-amber-700 transition-colors font-medium text-sm"
+                >
+                  Update Staff
+                </button>
+                <button 
+                  type="button" 
+                  onClick={() => {setIsEditModalOpen(false); setSelectedStaff(null)}}
+                  className="flex-1 bg-slate-100 text-slate-700 px-4 py-2 rounded-lg hover:bg-slate-200 transition-colors font-medium text-sm"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
         )}
       </Modal>
 
@@ -434,4 +600,5 @@ export function StaffPageClient({ staff, roles }: Props) {
     </div>
   )
 }
+
 

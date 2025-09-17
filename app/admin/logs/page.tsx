@@ -25,3 +25,4 @@ export default async function AdminActivityLogsPage() {
   return <ActivityLogsPageClient logs={logs} />
 }
 
+

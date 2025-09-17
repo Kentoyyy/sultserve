@@ -22,3 +22,4 @@ export default async function AdminArchivePage() {
   return <ArchivePageClient archivedProducts={archivedProducts} />
 }
 
+

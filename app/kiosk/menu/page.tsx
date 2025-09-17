@@ -115,9 +115,9 @@ export default function KioskMenuPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600 mx-auto mb-4"></div>
           <p className="text-slate-600">Loading menu...</p>
         </div>
       </div>
@@ -125,7 +125,7 @@ export default function KioskMenuPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
+    <div className="min-h-screen bg-white text-slate-900 flex flex-col">
       {/* Header */}
       <div className="bg-white border-b border-slate-200 px-6 py-4">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
@@ -139,7 +139,7 @@ export default function KioskMenuPage() {
               </svg>
               Back
             </button>
-            <div className="w-8 h-8 bg-emerald-600 rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-amber-700 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-sm">S</span>
             </div>
             <div>
@@ -161,7 +161,7 @@ export default function KioskMenuPage() {
               </div>
               <button 
                 onClick={proceedToCheckout}
-                className="bg-emerald-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-emerald-700 transition-colors shadow-sm"
+                className="bg-amber-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-amber-700 transition-colors shadow-sm"
               >
                 Continue →
               </button>
@@ -179,7 +179,7 @@ export default function KioskMenuPage() {
                 onClick={() => setSelectedCategory('')}
                 className={`px-4 py-2 rounded-lg whitespace-nowrap transition-colors border ${
                   selectedCategory === '' 
-                    ? 'bg-emerald-600 text-white border-emerald-600' 
+                    ? 'bg-amber-600 text-white border-amber-600' 
                     : 'bg-white text-slate-700 border-slate-200 hover:border-slate-300 hover:bg-slate-50'
                 }`}
               >
@@ -198,7 +198,7 @@ export default function KioskMenuPage() {
                     onClick={() => setSelectedCategory(category.name)}
                     className={`px-4 py-2 rounded-lg whitespace-nowrap transition-colors border ${
                       selectedCategory === category.name 
-                        ? 'bg-emerald-600 text-white border-emerald-600' 
+                        ? 'bg-amber-600 text-white border-amber-600' 
                         : 'bg-white text-slate-700 border-slate-200 hover:border-slate-300 hover:bg-slate-50'
                     }`}
                   >
@@ -215,7 +215,7 @@ export default function KioskMenuPage() {
             {availableProducts.map((product: any) => {
               const cartQuantity = getCartItemQuantity(product.id)
               return (
-                <div key={product.id} className="bg-white rounded-xl border border-slate-200 overflow-hidden hover:border-slate-300 transition-colors">
+                <div key={product.id} className="bg-white rounded-xl border border-slate-200 overflow-hidden hover:border-amber-200 transition-colors shadow-sm">
                   {/* Product Image */}
                   <div className="h-40 bg-slate-50 flex items-center justify-center border-b border-slate-100">
                     <div className="text-4xl">
@@ -241,7 +241,7 @@ export default function KioskMenuPage() {
                       </span>
                       
                       {product.hasRecipe && product.canMake < 10 && (
-                        <span className="text-xs text-amber-600 bg-amber-50 px-2 py-1 rounded-full">
+                        <span className="text-xs text-amber-700 bg-amber-50 px-2 py-1 rounded-full">
                           {product.canMake} left
                         </span>
                       )}
@@ -251,7 +251,7 @@ export default function KioskMenuPage() {
                     {cartQuantity === 0 ? (
                       <button
                         onClick={() => addToCart(product)}
-                        className="w-full bg-emerald-600 text-white py-3 rounded-lg font-medium hover:bg-emerald-700 transition-colors"
+                        className="w-full bg-amber-600 text-white py-3 rounded-lg font-medium hover:bg-amber-700 transition-colors"
                       >
                         Add to Cart
                       </button>
@@ -269,7 +269,7 @@ export default function KioskMenuPage() {
                         <button
                           onClick={() => addToCart(product)}
                           disabled={product.hasRecipe && cartQuantity >= product.canMake}
-                          className="w-9 h-9 bg-emerald-600 text-white rounded-lg flex items-center justify-center hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="w-9 h-9 bg-amber-600 text-white rounded-lg flex items-center justify-center hover:bg-amber-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           +
                         </button>
@@ -301,7 +301,7 @@ export default function KioskMenuPage() {
         <div className="fixed bottom-6 right-6 md:hidden z-50">
           <button 
             onClick={proceedToCheckout}
-            className="bg-emerald-600 text-white p-4 rounded-xl shadow-lg hover:bg-emerald-700 transition-all flex items-center gap-2"
+            className="bg-amber-600 text-white p-4 rounded-xl shadow-lg hover:bg-amber-700 transition-all flex items-center gap-2"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6.5M7 13h10M17 21a2 2 0 100-4 2 2 0 000 4zM9 21a2 2 0 100-4 2 2 0 000 4z" />

@@ -107,7 +107,7 @@ export default function KioskCheckoutPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
+    <div className="min-h-screen bg-white text-slate-900 flex flex-col">
       {/* Header */}
       <div className="bg-white border-b border-slate-200 px-6 py-4">
         <div className="max-w-4xl mx-auto flex items-center gap-4">
@@ -120,7 +120,7 @@ export default function KioskCheckoutPage() {
             </svg>
             Back to Menu
           </button>
-          <div className="w-8 h-8 bg-emerald-600 rounded-lg flex items-center justify-center">
+          <div className="w-8 h-8 bg-amber-700 rounded-lg flex items-center justify-center">
             <span className="text-white font-bold text-sm">S</span>
           </div>
           <div>
@@ -159,7 +159,7 @@ export default function KioskCheckoutPage() {
               </div>
               <div className="flex justify-between items-center text-xl font-bold text-slate-900">
                 <span>Total Amount:</span>
-                <span className="text-emerald-600">₱{(getTotalPrice() / 100).toFixed(2)}</span>
+                <span className="text-amber-700">₱{(getTotalPrice() / 100).toFixed(2)}</span>
               </div>
             </div>
           </div>
@@ -173,7 +173,7 @@ export default function KioskCheckoutPage() {
                 onClick={() => handlePaymentSelect('cash')}
                 className={`w-full p-4 rounded-lg border-2 transition-colors text-left ${
                   selectedPayment === 'cash' 
-                    ? 'border-emerald-600 bg-emerald-50' 
+                    ? 'border-amber-600 bg-amber-50' 
                     : 'border-slate-200 hover:border-slate-300'
                 }`}
               >
@@ -190,7 +190,7 @@ export default function KioskCheckoutPage() {
                 onClick={() => handlePaymentSelect('gcash')}
                 className={`w-full p-4 rounded-lg border-2 transition-colors text-left ${
                   selectedPayment === 'gcash' 
-                    ? 'border-emerald-600 bg-emerald-50' 
+                    ? 'border-amber-600 bg-amber-50' 
                     : 'border-slate-200 hover:border-slate-300'
                 }`}
               >
@@ -207,7 +207,7 @@ export default function KioskCheckoutPage() {
                 onClick={() => handlePaymentSelect('card')}
                 className={`w-full p-4 rounded-lg border-2 transition-colors text-left ${
                   selectedPayment === 'card' 
-                    ? 'border-emerald-600 bg-emerald-50' 
+                    ? 'border-amber-600 bg-amber-50' 
                     : 'border-slate-200 hover:border-slate-300'
                 }`}
               >
@@ -230,7 +230,7 @@ export default function KioskCheckoutPage() {
             <button
               onClick={placeOrder}
               disabled={!selectedPayment || isPlacingOrder || cart.length === 0}
-              className="w-full bg-emerald-600 text-white py-4 rounded-lg font-semibold hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-amber-600 text-white py-4 rounded-lg font-semibold hover:bg-amber-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isPlacingOrder ? (
                 <div className="flex items-center justify-center gap-2">
