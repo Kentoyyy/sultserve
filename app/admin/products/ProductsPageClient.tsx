@@ -59,6 +59,10 @@ function AddProductForm({ categories, onSubmit, onCancel }: AddProductFormProps)
   const [isCustomProduct, setIsCustomProduct] = useState(false)
   const [customPrice, setCustomPrice] = useState('')
   const [customName, setCustomName] = useState('')
+  const [imageFile, setImageFile] = useState<File | null>(null)
+  const [isUploading, setIsUploading] = useState(false)
+  const [imageUrl, setImageUrl] = useState<string>('')
+  const [notice, setNotice] = useState<{ type: 'success' | 'error' | 'info'; message: string } | null>(null)
 
   const handleCategoryChange = (category: string) => {
     setSelectedCategory(category)
@@ -145,6 +149,51 @@ function AddProductForm({ categories, onSubmit, onCancel }: AddProductFormProps)
           </div>
         )}
 
+        {/* Image Upload */}
+        <div className="space-y-2">
+          <label className="block text-sm font-semibold text-slate-700">Product Image</label>
+          <div className="flex items-center gap-3">
+            <input 
+              type="file" 
+              accept="image/*" 
+              onChange={(e) => setImageFile(e.target.files?.[0] || null)}
+              className="text-sm"
+            />
+            <button
+              type="button"
+              disabled={!imageFile || isUploading}
+              onClick={async () => {
+                if (!imageFile) return
+                setIsUploading(true)
+                setNotice(null)
+                try {
+                  const fd = new FormData()
+                  fd.append('file', imageFile)
+                  const res = await fetch('/api/upload', { method: 'POST', body: fd })
+                  const result = await res.json()
+                  if (res.ok) {
+                    setImageUrl(result.url)
+                    setNotice({ type: 'success', message: 'Image uploaded. Will be saved on Create Product.' })
+                  } else {
+                    setNotice({ type: 'error', message: result.error || 'Upload failed' })
+                  }
+                } finally {
+                  setIsUploading(false)
+                }
+              }}
+              className="px-3 py-1.5 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200 disabled:opacity-50 text-sm"
+            >
+              {isUploading ? 'Uploading...' : 'Upload'}
+            </button>
+          </div>
+          {imageUrl && (
+            <div className="text-xs text-emerald-700">Uploaded: {imageUrl}</div>
+          )}
+          {notice && (
+            <div className={`text-xs mt-1 px-2 py-1 rounded border ${notice.type === 'success' ? 'bg-emerald-50 border-emerald-200 text-emerald-700' : notice.type === 'error' ? 'bg-red-50 border-red-200 text-red-700' : 'bg-slate-50 border-slate-200 text-slate-700'}`}>{notice.message}</div>
+          )}
+        </div>
+
         <input type="hidden" name="name" value={isCustomProduct ? customName : selectedProduct} />
         <input type="hidden" name="category_type" value={selectedCategory} />
 
@@ -217,6 +266,7 @@ function AddProductForm({ categories, onSubmit, onCancel }: AddProductFormProps)
             Cancel
           </button>
         </div>
+        <input type="hidden" name="uploaded_image_url" value={imageUrl} />
       </form>
     </div>
   )
@@ -232,6 +282,7 @@ interface Product {
   canMake: number
   limitingIngredient: string | null
   ingredients?: { id: string; inventoryItemId: string; name: string; quantityNeeded: number; unit: string; available: number }[]
+  imageUrl?: string | null
 }
 
 interface Category {
@@ -257,6 +308,10 @@ export function ProductsPageClient({ products, categories }: Props) {
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 5
   const router = useRouter()
+
+  const [editNewImageUrl, setEditNewImageUrl] = useState('')
+  const [editRemoveImage, setEditRemoveImage] = useState(false)
+  const [editNotice, setEditNotice] = useState<{ type: 'success' | 'error' | 'info'; message: string } | null>(null)
 
   // Filter products based on search and filters
   const filteredProducts = products.filter(product => {
@@ -285,6 +340,7 @@ export function ProductsPageClient({ products, categories }: Props) {
     const categoryType = String(formData.get('category_type') || '')
     const status = String(formData.get('status') || 'available')
     const description = String(formData.get('description') || '') || null
+    const image_url = String(formData.get('uploaded_image_url') || '') || null
 
     if (!name) {
       alert('Please select a product or enter a custom name')
@@ -304,7 +360,7 @@ export function ProductsPageClient({ products, categories }: Props) {
     const category_id = category?.id || null
 
     try {
-      const payload = { name, price_cents: price, category_id, status, description }
+      const payload = { name, price_cents: price, category_id, status, description, image_url }
       console.log('Sending payload:', payload)
       
       const response = await fetch('/api/admin/products', {
@@ -335,12 +391,20 @@ export function ProductsPageClient({ products, categories }: Props) {
     const price = Math.round(Number(formData.get('price') || 0) * 100)
     const status = String(formData.get('status') || 'available')
     const description = String(formData.get('description') || '') || null
+    const newImage = String(formData.get('new_image_url') || '')
+    const currentImage = String(formData.get('current_image') || '')
+
+    const body: any = { name, priceCents: price, status, description }
+    if (newImage || currentImage === '') {
+      // replace or remove
+      body.imageUrl = newImage || null
+    }
 
     try {
       const response = await fetch(`/api/admin/products/${selectedProduct.id}`, {
         method: 'PATCH',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ name, priceCents: price, status, description })
+        body: JSON.stringify(body)
       })
       
       if (response.ok) {
@@ -355,6 +419,8 @@ export function ProductsPageClient({ products, categories }: Props) {
 
   const openEditModal = (product: Product) => {
     setSelectedProduct(product)
+    setEditNewImageUrl('')
+    setEditRemoveImage(false)
     setIsEditModalOpen(true)
   }
 
@@ -473,24 +539,29 @@ export function ProductsPageClient({ products, categories }: Props) {
               <div className="grid grid-cols-6 sm:grid-cols-12 gap-2 sm:gap-4 items-center">
                 {/* Product */}
                 <div className="col-span-2 sm:col-span-3">
-                  <div className="font-medium text-slate-900 text-sm sm:text-base">{product.name}</div>
-                  {!product.hasRecipe && (
-                    <div className="text-xs text-amber-600 mt-1 flex items-center gap-1">
-                      <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                      </svg>
-                      No recipe
+                  <div className="flex items-center gap-3">
+                    <img src={(product as any).imageUrl || '/placeholder.png'} alt={product.name} className="w-10 h-10 rounded object-cover border" />
+                    <div>
+                      <div className="font-medium text-slate-900 text-sm sm:text-base">{product.name}</div>
+                      {!product.hasRecipe && (
+                        <div className="text-xs text-amber-600 mt-1 flex items-center gap-1">
+                          <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                          </svg>
+                          No recipe
+                        </div>
+                      )}
+                      {/* Mobile: Show category below product name */}
+                      <div className="sm:hidden mt-1">
+                        {product.category ? (
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-800">
+                            {product.category}
+                          </span>
+                        ) : (
+                          <span className="text-slate-400 text-xs">No category</span>
+                        )}
+                      </div>
                     </div>
-                  )}
-                  {/* Mobile: Show category below product name */}
-                  <div className="sm:hidden mt-1">
-                    {product.category ? (
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-800">
-                        {product.category}
-                      </span>
-                    ) : (
-                      <span className="text-slate-400 text-xs">No category</span>
-                    )}
                   </div>
                 </div>
 
@@ -658,6 +729,59 @@ export function ProductsPageClient({ products, categories }: Props) {
                   defaultValue={selectedProduct.name}
                   required 
                 />
+              </div>
+              
+              {/* Image controls */}
+              <div className="space-y-2">
+                <label className="block text-sm font-semibold text-slate-700">Product Image</label>
+                <div className="flex items-center gap-3">
+                  <img src={(editNewImageUrl || (selectedProduct as any).imageUrl || '/placeholder.png')} alt="preview" className="w-16 h-16 rounded object-cover border" />
+                  <input type="hidden" name="new_image_url" value={editNewImageUrl} />
+                  <input type="hidden" name="current_image" value={editRemoveImage ? '' : ((selectedProduct as any).imageUrl || '')} />
+                  <button
+                    type="button"
+                    className="px-3 py-1.5 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200 text-sm"
+                    onClick={async () => {
+                      const input = document.createElement('input')
+                      input.type = 'file'
+                      input.accept = 'image/*'
+                      input.onchange = async () => {
+                        const file = input.files?.[0]
+                        if (!file) return
+                        setEditNotice(null)
+                        const fd = new FormData()
+                        fd.append('file', file)
+                        const res = await fetch('/api/upload', { method: 'POST', body: fd })
+                        const result = await res.json()
+                        if (res.ok) {
+                          setEditNewImageUrl(result.url)
+                          setEditRemoveImage(false)
+                          setEditNotice({ type: 'success', message: 'Image uploaded. Click Update Product to save.' })
+                        } else {
+                          setEditNotice({ type: 'error', message: result.error || 'Upload failed' })
+                        }
+                      }
+                      input.click()
+                    }}
+                  >
+                    Replace Image
+                  </button>
+                  {(selectedProduct as any).imageUrl && !editRemoveImage && (
+                    <button
+                      type="button"
+                      className="px-3 py-1.5 rounded-lg bg-red-50 text-red-700 hover:bg-red-100 text-sm"
+                      onClick={() => { setEditRemoveImage(true); setEditNewImageUrl(''); setEditNotice({ type: 'info', message: 'Image will be removed after saving.' }) }}
+                    >
+                      Remove Image
+                    </button>
+                  )}
+                  {editRemoveImage && (
+                    <span className="text-xs text-red-600">Will remove on save</span>
+                  )}
+                </div>
+                {editNotice && (
+                  <div className={`text-xs mt-2 px-2 py-1 rounded border ${editNotice.type === 'success' ? 'bg-emerald-50 border-emerald-200 text-emerald-700' : editNotice.type === 'error' ? 'bg-red-50 border-red-200 text-red-700' : 'bg-slate-50 border-slate-200 text-slate-700'}`}>{editNotice.message}</div>
+                )}
               </div>
               
               {/* Price and Status Row */}
