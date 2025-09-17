@@ -28,6 +28,7 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    // Accept JSON payload with optional image_url already uploaded
     const body = await request.json()
     console.log('Received body:', body)
     
