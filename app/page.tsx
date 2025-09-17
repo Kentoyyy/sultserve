@@ -15,12 +15,30 @@ interface Product {
   limitingIngredient?: string | null
   stockStatus: 'available' | 'low_stock' | 'out_of_stock'
   isOrderable: boolean
+  imageUrl?: string | null
 }
 
 interface Category {
   id: string
   name: string
   sortOrder: number
+}
+
+function getPlaceholderImage(category: string | null): string {
+  const key = (category || '').toLowerCase()
+  if (key.includes('coffee')) {
+    return 'https://images.unsplash.com/photo-1504754524776-8f4f37790ca0?q=80&w=800&auto=format&fit=crop'
+  }
+  if (key.includes('milk') || key.includes('tea')) {
+    return 'https://images.unsplash.com/photo-1541643600914-78b084683601?q=80&w=800&auto=format&fit=crop'
+  }
+  if (key.includes('pastr')) {
+    return 'https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=800&auto=format&fit=crop'
+  }
+  if (key.includes('snack') || key.includes('food')) {
+    return 'https://images.unsplash.com/photo-1550547660-d9450f859349?q=80&w=800&auto=format&fit=crop'
+  }
+  return 'https://images.unsplash.com/photo-1551782450-17144c3a09a7?q=80&w=800&auto=format&fit=crop'
 }
 
 export default function Home() {
@@ -75,6 +93,15 @@ export default function Home() {
     ? products 
     : products.filter(product => product.category?.toLowerCase() === selectedCategory.toLowerCase())
 
+  const getMenuImagePath = (product: Product) => {
+    const slug = product.name
+      .toLowerCase()
+      .replace(/[^a-z0-9\s]/g, '')
+      .trim()
+      .replace(/\s+/g, '_')
+    return product.imageUrl || `/menu_${slug}.jpg`
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
@@ -101,64 +128,202 @@ export default function Home() {
                 <p className="text-sm text-slate-500">Fresh Coffee • Delicious Pastries • Quality Service</p>
               </div>
             </div>
-            <div className="flex items-center gap-6">
-              <div className="text-right hidden md:block">
-                <div className="text-lg font-semibold text-slate-900">{currentTime}</div>
-                <div className="text-sm text-slate-500">
-                  {new Date().toLocaleDateString('en-US', { 
-                    weekday: 'short',
-                    month: 'short',
-                    day: 'numeric'
-                  })}
-                </div>
-              </div>
+            <div className="hidden md:flex items-center gap-6 text-sm">
+              <a href="#home" className="text-slate-700 hover:text-emerald-600 font-medium">Home</a>
+              <a href="#offer" className="text-slate-700 hover:text-emerald-600 font-medium">Offer</a>
+              <a href="#service" className="text-slate-700 hover:text-emerald-600 font-medium">Service</a>
+              <a href="#menu" className="text-slate-700 hover:text-emerald-600 font-medium">Menu</a>
+              <a href="#about" className="text-slate-700 hover:text-emerald-600 font-medium">About</a>
               <button
                 onClick={() => router.push('/kiosk/menu')}
-                className="bg-emerald-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-emerald-700 transition-colors flex items-center gap-2"
+                className="bg-emerald-600 text-white px-5 py-2.5 rounded-full font-semibold hover:bg-emerald-700 transition-colors"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                </svg>
-                Start Ordering
+                Order Now
+              </button>
+            </div>
+            <div className="md:hidden">
+              <button
+                onClick={() => router.push('/kiosk/menu')}
+                className="bg-emerald-600 text-white px-4 py-2 rounded-xl font-semibold"
+              >
+                Order
               </button>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Welcome Banner */}
-      <div className="bg-gradient-to-r from-emerald-600 to-emerald-700 text-white">
-        <div className="max-w-7xl mx-auto px-6 py-12">
-          <div className="text-center">
-            <h2 className="text-4xl font-bold mb-4">Welcome to Our Café</h2>
-            <p className="text-xl text-emerald-100 mb-6">Discover our freshly brewed coffee and delicious treats</p>
-            <div className="inline-flex items-center gap-2 bg-white/20 px-4 py-2 rounded-full text-sm">
-              <span className="w-2 h-2 bg-emerald-300 rounded-full animate-pulse"></span>
-              Now Open • Fresh Daily
+      {/* Hero (Foodle-style) */}
+      <div id="home" className="bg-rose-50">
+        <div className="max-w-7xl mx-auto px-6 pt-10 pb-16">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+            {/* Copy */}
+            <div>
+              <div className="inline-flex items-center gap-2 text-sm text-rose-500 font-semibold mb-3">
+                <span className="w-2 h-2 bg-rose-500 rounded-full"></span>
+                All Fast Food is Available at <span className="underline decoration-rose-400">Foodle</span>
+              </div>
+              <h2 className="text-4xl md:text-5xl font-extrabold text-slate-900 leading-tight mb-4">
+                All Fast Food is
+                <br className="hidden md:block" /> Available at
+                <span className="text-rose-500"> SulitServe</span>
+              </h2>
+              <p className="text-slate-600 mb-6 max-w-xl">
+                We are just a click away when you crave for delicious fast food and fresh café items.
+              </p>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => router.push('/kiosk/menu')}
+                  className="bg-rose-500 text-white px-6 py-3 rounded-full font-semibold shadow-sm hover:bg-rose-600 transition"
+                >
+                  Buy Now
+                </button>
+                <button
+                  onClick={() => router.push('/kiosk/checkout')}
+                  className="bg-white text-slate-700 px-5 py-3 rounded-full font-semibold border border-slate-200 hover:bg-slate-50 transition"
+                >
+                  How To Order
+                </button>
+              </div>
+            </div>
+
+            {/* Hero Image */}
+            <div className="relative">
+              <img
+                src="https://images.unsplash.com/photo-1550547660-d9450f859349?q=80&w=1200&auto=format&fit=crop"
+                alt="Delicious sandwich"
+                className="w-full max-w-lg mx-auto drop-shadow-xl rounded-3xl"
+              />
+              <div className="hidden md:block absolute -top-4 -right-4 w-24 h-24 bg-rose-200 rounded-full blur-2xl opacity-70"></div>
+            </div>
+          </div>
+        </div>
+
+        {/* Features Bar */}
+        <div className="px-6 -mt-8">
+          <div className="max-w-5xl mx-auto bg-white rounded-2xl shadow-md border border-slate-100 p-4 grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="flex items-start gap-3">
+              <div className="shrink-0 w-10 h-10 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center">🚚</div>
+              <div>
+                <div className="font-semibold text-slate-900">Fast Delivery</div>
+                <div className="text-xs text-slate-500">Delivered to your home within 1-2 hours of ordering.</div>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="shrink-0 w-10 h-10 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center">🥗</div>
+              <div>
+                <div className="font-semibold text-slate-900">Fresh Food</div>
+                <div className="text-xs text-slate-500">100% fresh; we don’t deliver stale food.</div>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="shrink-0 w-10 h-10 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center">💸</div>
+              <div>
+                <div className="font-semibold text-slate-900">Free Delivery</div>
+                <div className="text-xs text-slate-500">Delivery is included for qualifying orders.</div>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Category Navigation */}
-      <div className="bg-white border-b border-slate-200 sticky top-[73px] z-10">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center gap-2 overflow-x-auto">
+      {/* Best Delivered Categories */}
+      <div id="offer" className="bg-white">
+        <div className="max-w-7xl mx-auto px-6 py-12">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-end">
+            <div>
+              <h3 className="text-2xl md:text-3xl font-extrabold text-slate-900">
+                Best <span className="text-rose-500">Delivered</span> Categories
+              </h3>
+            </div>
+            <p className="text-slate-500 text-sm max-w-md">
+              Here are some of our most ordered categories. Order now and enjoy.
+            </p>
+          </div>
+
+          <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-6">
+            {/* Card 1 */}
+            <div className="bg-white rounded-2xl border border-slate-200 p-5 text-center hover:shadow-md transition">
+              <div className="relative mx-auto w-40 h-40 mb-4">
+                <img
+                  src="https://images.unsplash.com/photo-1551782450-17144c3a09a7?q=80&w=800&auto=format&fit=crop"
+                  alt="Chicken Burger"
+                  className="w-full h-full object-cover rounded-2xl"
+                />
+              </div>
+              <div className="font-semibold text-slate-900">Chicken Burger</div>
+              <button
+                onClick={() => router.push('/kiosk/menu')}
+                className="mt-2 text-sm text-rose-500 font-semibold hover:underline"
+              >
+                Order Now →
+              </button>
+            </div>
+
+            {/* Card 2 */}
+            <div className="bg-white rounded-2xl border border-slate-200 p-5 text-center hover:shadow-md transition">
+              <div className="relative mx-auto w-40 h-40 mb-4">
+                <img
+                  src="https://images.unsplash.com/photo-1548365328-9f547fb09530?q=80&w=800&auto=format&fit=crop"
+                  alt="Chicken Pizza"
+                  className="w-full h-full object-cover rounded-2xl"
+                />
+              </div>
+              <div className="font-semibold text-slate-900">Chicken Pizza</div>
+              <button
+                onClick={() => router.push('/kiosk/menu')}
+                className="mt-2 text-sm text-rose-500 font-semibold hover:underline"
+              >
+                Order Now →
+              </button>
+            </div>
+
+            {/* Card 3 */}
+            <div className="bg-white rounded-2xl border border-slate-200 p-5 text-center hover:shadow-md transition">
+              <div className="relative mx-auto w-40 h-40 mb-4">
+                <img
+                  src="https://images.unsplash.com/photo-1585238342028-4bbc0f3a972e?q=80&w=800&auto=format&fit=crop"
+                  alt="French Fries"
+                  className="w-full h-full object-cover rounded-2xl"
+                />
+              </div>
+              <div className="font-semibold text-slate-900">French Fries</div>
+              <button
+                onClick={() => router.push('/kiosk/menu')}
+                className="mt-2 text-sm text-rose-500 font-semibold hover:underline"
+              >
+                Order Now →
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Menu Section (all products as minimalist cards) */}
+      <div id="menu" className="bg-white border-b border-slate-200">
+        <div className="max-w-7xl mx-auto px-6 py-8">
+          <div className="flex items-end justify-between">
+            <h3 className="text-2xl md:text-3xl font-extrabold text-slate-900">Our Regular Menu</h3>
+            <div className="text-xs text-slate-500">{products.length} items</div>
+          </div>
+
+          {/* Category chips */}
+          <div className="mt-4 flex items-center gap-2 overflow-x-auto">
             <button
               onClick={() => setSelectedCategory('all')}
-              className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-colors ${
+              className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
                 selectedCategory === 'all'
                   ? 'bg-emerald-100 text-emerald-700 border border-emerald-200'
                   : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
               }`}
             >
-              All Items
+              All
             </button>
             {categories.map((category) => (
               <button
                 key={category.id}
                 onClick={() => setSelectedCategory(category.name)}
-                className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-colors ${
+                className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
                   selectedCategory.toLowerCase() === category.name.toLowerCase()
                     ? 'bg-emerald-100 text-emerald-700 border border-emerald-200'
                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
@@ -171,121 +336,24 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Products Grid */}
+      {/* Products Grid as minimalist cards */}
       <div className="max-w-7xl mx-auto px-6 py-8">
         {filteredProducts.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredProducts.map((product) => (
-              <div key={product.id} className={`bg-white rounded-2xl border overflow-hidden transition-all duration-200 group ${
-                product.stockStatus === 'out_of_stock' 
-                  ? 'border-red-200 opacity-75' 
-                  : 'border-slate-200 hover:border-slate-300 hover:shadow-lg'
-              }`}>
-                {/* Stock Status Badge */}
-                <div className="relative">
-                  <div className="h-48 bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center relative">
-                    <div className={`text-4xl ${product.stockStatus === 'out_of_stock' ? 'text-slate-300' : 'text-slate-400'}`}>
-                      {product.category === 'Coffee' ? '☕' :
-                       product.category === 'Milk Tea & Tea' ? '🧋' :
-                       product.category === 'Pastries & Baked Goods' ? '🥐' :
-                       product.category === 'Snacks & Food' ? '🍕' : '🍽️'}
-                    </div>
-                    
-                    {/* Stock Status Badge */}
-                    <div className="absolute top-3 right-3">
-                      {product.stockStatus === 'available' && (
-                        <div className="bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1">
-                          <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
-                          Available
-                        </div>
-                      )}
-                      {product.stockStatus === 'low_stock' && (
-                        <div className="bg-amber-100 text-amber-700 px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1">
-                          <span className="w-1.5 h-1.5 bg-amber-500 rounded-full"></span>
-                          Low Stock ({product.canMake} left)
-                        </div>
-                      )}
-                      {product.stockStatus === 'out_of_stock' && (
-                        <div className="bg-red-100 text-red-700 px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1">
-                          <span className="w-1.5 h-1.5 bg-red-500 rounded-full"></span>
-                          Out of Stock
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Out of Stock Overlay */}
-                    {product.stockStatus === 'out_of_stock' && (
-                      <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
-                        <div className="bg-red-600 text-white px-3 py-1 rounded-lg text-sm font-semibold">
-                          Currently Unavailable
-                        </div>
-                      </div>
-                    )}
-                  </div>
+              <div key={product.id} className="bg-white rounded-2xl border border-slate-200 p-5 text-center hover:shadow-md transition">
+                <div className="relative mx-auto w-40 h-40 mb-4">
+                  <img
+                    src={getMenuImagePath(product) || getPlaceholderImage(product.category)}
+                    alt={product.name}
+                    className="w-full h-full object-cover rounded-2xl"
+                  />
                 </div>
-                
-                {/* Product Info */}
-                <div className="p-6">
-                  <div className="flex items-start justify-between mb-2">
-                    <h3 className={`font-semibold text-lg leading-tight transition-colors ${
-                      product.stockStatus === 'out_of_stock' 
-                        ? 'text-slate-500' 
-                        : 'text-slate-900 group-hover:text-emerald-600'
-                    }`}>
-                      {product.name}
-                    </h3>
-                  </div>
-                  
-                  {product.description && (
-                    <p className="text-sm text-slate-600 mb-3 line-clamp-2">
-                      {product.description}
-                    </p>
-                  )}
-                  
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className={`text-2xl font-bold ${
-                        product.stockStatus === 'out_of_stock' ? 'text-slate-400' : 'text-emerald-600'
-                      }`}>
-                        ₱{(product.priceCents / 100).toFixed(2)}
-                      </div>
-                      {product.category && (
-                        <div className="text-sm text-slate-500 mt-1">
-                          {product.category}
-                        </div>
-                      )}
-                      {product.limitingIngredient && product.stockStatus === 'low_stock' && (
-                        <div className="text-xs text-amber-600 mt-1">
-                          Limited by: {product.limitingIngredient}
-                        </div>
-                      )}
-                      {product.limitingIngredient && product.stockStatus === 'out_of_stock' && (
-                        <div className="text-xs text-red-600 mt-1">
-                          Out of: {product.limitingIngredient}
-                        </div>
-                      )}
-                    </div>
-                    
-                    {/* Order Status */}
-                    <div className="text-center">
-                      {product.isOrderable ? (
-                        <div className="flex items-center gap-1 text-emerald-600 text-sm font-medium">
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                          </svg>
-                          Can Order
-                        </div>
-                      ) : (
-                        <div className="flex items-center gap-1 text-red-500 text-sm font-medium">
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                          </svg>
-                          Unavailable
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
+                <div className="font-semibold text-slate-900">{product.name}</div>
+                {product.category && (
+                  <div className="text-xs text-slate-500 mt-1">{product.category}</div>
+                )}
+                <div className="text-sm text-emerald-600 mt-1 font-semibold">₱{(product.priceCents / 100).toFixed(2)}</div>
               </div>
             ))}
           </div>
@@ -293,14 +361,52 @@ export default function Home() {
           <div className="text-center py-16">
             <div className="text-6xl mb-4 text-slate-300">☕</div>
             <h3 className="text-xl font-semibold text-slate-900 mb-2">No items available</h3>
-            <p className="text-slate-500">
-              {selectedCategory === 'all' 
-                ? 'No products are currently available.' 
-                : `No items in "${selectedCategory}" category right now.`
-              }
-            </p>
+            <p className="text-slate-500">No products are currently available.</p>
           </div>
         )}
+      </div>
+
+      {/* Service Section */}
+      <div id="service" className="bg-emerald-50/50 border-t border-slate-200">
+        <div className="max-w-7xl mx-auto px-6 py-12">
+          <h3 className="text-2xl font-extrabold text-slate-900 mb-6">Our Services</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-white rounded-2xl border border-slate-200 p-6">
+              <div className="text-3xl mb-3">🏪</div>
+              <div className="font-semibold text-slate-900 mb-1">Dine-in & Takeout</div>
+              <div className="text-sm text-slate-600">Order at the kiosk or counter, pick up fast.</div>
+            </div>
+            <div className="bg-white rounded-2xl border border-slate-200 p-6">
+              <div className="text-3xl mb-3">🛵</div>
+              <div className="font-semibold text-slate-900 mb-1">Delivery</div>
+              <div className="text-sm text-slate-600">Fast delivery partners in your area.</div>
+            </div>
+            <div className="bg-white rounded-2xl border border-slate-200 p-6">
+              <div className="text-3xl mb-3">🎉</div>
+              <div className="font-semibold text-slate-900 mb-1">Catering</div>
+              <div className="text-sm text-slate-600">Events, meetings, and special occasions.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* About Section */}
+      <div id="about" className="bg-white border-t border-slate-200">
+        <div className="max-w-7xl mx-auto px-6 py-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+            <div>
+              <h3 className="text-2xl md:text-3xl font-extrabold text-slate-900 mb-3">About SulitServe</h3>
+              <p className="text-slate-600 mb-4">We brew quality coffee and serve comfort food with a smile. Our minimalist kiosk-first experience lets customers order quickly while keeping things simple.</p>
+              <div className="flex items-center gap-3">
+                <button onClick={() => router.push('/kiosk/menu')} className="bg-emerald-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-emerald-700">Explore Menu</button>
+                <a href="#service" className="px-6 py-3 rounded-xl font-semibold border border-slate-200 text-slate-700 hover:bg-slate-50">Our Services</a>
+              </div>
+            </div>
+            <div>
+              <img src="https://images.unsplash.com/photo-1504754524776-8f4f37790ca0?q=80&w=1200&auto=format&fit=crop" alt="About image" className="rounded-2xl w-full object-cover" />
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Call to Action */}
@@ -320,16 +426,6 @@ export default function Home() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                 </svg>
                 Order Now
-              </button>
-              <button
-                onClick={() => router.push('/admin')}
-                className="bg-slate-100 text-slate-700 px-8 py-4 rounded-xl font-semibold hover:bg-slate-200 transition-colors flex items-center justify-center gap-2"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-                Staff Portal
               </button>
             </div>
           </div>
