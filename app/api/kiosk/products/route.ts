@@ -63,6 +63,7 @@ export async function GET() {
         category: p.category?.name ?? null,
         priceCents: p.priceCents,
         status: p.status,
+        imageUrl: p.imageUrl,
         hasRecipe,
         canMake: hasRecipe ? canMake : 999, // If no recipe, assume unlimited
         limitingIngredient
@@ -75,5 +76,6 @@ export async function GET() {
     return NextResponse.json({ ok: false, error: e?.message }, { status: 500 })
   }
 }
+
 
 
