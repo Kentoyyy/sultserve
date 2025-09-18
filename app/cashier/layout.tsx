@@ -53,54 +53,61 @@ export default function CashierLayout({ children }: { children: React.ReactNode 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
       {/* Header */}
-      <div className="flex h-16 items-center justify-between border-b border-slate-200 bg-white px-6 shadow-sm">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-emerald-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">S</span>
+      <div className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-amber-100">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="flex h-16 items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-gradient-to-br from-amber-600 to-amber-800 rounded-lg flex items-center justify-center shadow-sm">
+                <span className="text-white font-bold text-sm">S</span>
+              </div>
+              <div className="hidden sm:block">
+                <div className="text-sm font-semibold text-slate-900">SulitServe Café</div>
+                <div className="text-xs text-amber-600 font-medium">Cashier</div>
+              </div>
             </div>
-            <span className="font-semibold text-slate-900">SulitServe Café - Cashier</span>
+            <div className="flex items-center gap-3">
+              <div className="text-right">
+                <div className="text-sm font-medium text-slate-900">{user.fullName}</div>
+                <div className="text-xs text-slate-500">{user.role?.name}</div>
+              </div>
+              <button 
+                onClick={handleLogout}
+                className="text-sm text-slate-600 hover:text-slate-900 px-3 py-1 rounded-md hover:bg-slate-100 transition-colors"
+              >
+                Logout
+              </button>
+            </div>
           </div>
         </div>
-        <div className="flex items-center gap-3">
-          <div className="text-right">
-            <div className="text-sm font-medium text-slate-900">{user.fullName}</div>
-            <div className="text-xs text-slate-500">{user.role?.name}</div>
-          </div>
-          <button 
-            onClick={handleLogout}
-            className="text-sm text-slate-600 hover:text-slate-900 px-3 py-1 rounded-md hover:bg-slate-100 transition-colors"
-          >
-            Logout
-          </button>
+        {/* Navigation */}
+        <div className="border-t border-amber-100">
+          <nav className="max-w-7xl mx-auto px-4">
+            <div className="flex gap-1 py-2">
+              <a 
+                href="/cashier" 
+                className="px-4 py-2 rounded-lg text-sm font-medium text-slate-700 hover:text-amber-700 hover:bg-amber-50 transition-all"
+              >
+                Orders
+              </a>
+              <a 
+                href="/cashier/products" 
+                className="px-4 py-2 rounded-lg text-sm font-medium text-slate-700 hover:text-amber-700 hover:bg-amber-50 transition-all"
+              >
+                Products
+              </a>
+            </div>
+          </nav>
         </div>
-      </div>
-
-      {/* Navigation */}
-      <div className="border-b border-slate-200 bg-white">
-        <nav className="px-6">
-          <div className="flex space-x-8">
-            <a 
-              href="/cashier" 
-              className="border-b-2 border-emerald-500 py-4 px-1 text-sm font-medium text-emerald-600"
-            >
-              Orders
-            </a>
-            <a 
-              href="/cashier/products" 
-              className="border-b-2 border-transparent py-4 px-1 text-sm font-medium text-slate-500 hover:text-slate-700 hover:border-slate-300"
-            >
-              Products
-            </a>
-          </div>
-        </nav>
       </div>
 
       {/* Main Content */}
-      <main className="p-6">{children}</main>
+      <main className="max-w-7xl mx-auto p-4 sm:p-6">{children}</main>
     </div>
   )
 }
+
+
+
 
 
 
