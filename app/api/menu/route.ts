@@ -80,7 +80,11 @@ export async function GET() {
       }
     })
     
-    return NextResponse.json({ ok: true, data: products })
+    return NextResponse.json({ 
+      ok: true, 
+      data: products,
+      lastModified: Date.now()
+    })
   } catch (e: any) {
     console.error('Error fetching menu data:', e)
     return NextResponse.json({ ok: false, error: e?.message }, { status: 500 })
