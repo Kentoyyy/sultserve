@@ -14,6 +14,7 @@ interface Order {
   orderNumber: string
   status: string
   totalAmount: number
+  paymentMethod?: string
   orderType: string
   createdAt: string
   items: OrderItem[]
@@ -134,7 +135,7 @@ export default function CashierDashboard() {
         return (
           <button
             onClick={() => updateOrderStatus(order.id, 'preparing')}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-full font-medium transition-colors flex items-center justify-center gap-2"
           >
             <span>👨‍🍳</span> Start Preparing
           </button>
@@ -143,7 +144,7 @@ export default function CashierDashboard() {
         return (
           <button
             onClick={() => updateOrderStatus(order.id, 'ready')}
-            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-full font-medium transition-colors flex items-center justify-center gap-2"
           >
             <span>✅</span> Mark Ready
           </button>
@@ -152,7 +153,7 @@ export default function CashierDashboard() {
         return (
           <button
             onClick={() => updateOrderStatus(order.id, 'completed')}
-            className="w-full bg-slate-600 hover:bg-slate-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+            className="w-full bg-slate-600 hover:bg-slate-700 text-white px-4 py-2 rounded-full font-medium transition-colors flex items-center justify-center gap-2"
           >
             <span>🎉</span> Complete Order
           </button>
@@ -185,7 +186,7 @@ export default function CashierDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-white text-slate-900">
+    <div className="min-h-screen bg-slate-50 text-slate-900">
       {/* Notification Toast */}
       {notification && (
         <div className="fixed top-4 right-4 z-50 bg-amber-600 text-white px-6 py-3 rounded-lg shadow-lg animate-bounce">
@@ -194,8 +195,8 @@ export default function CashierDashboard() {
       )}
 
       <div className="max-w-7xl mx-auto p-6 space-y-6">
-        {/* Header */}
-        <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+  {/* Header */}
+  <div className="bg-white rounded-3xl border border-amber-100 p-6 shadow-md">
           <div className="flex items-center justify-between mb-6">
             <div>
               <h1 className="text-3xl font-bold text-slate-900">Order Management</h1>
@@ -213,23 +214,23 @@ export default function CashierDashboard() {
           </div>
 
           {/* Tabs */}
-          <div className="flex items-center gap-1 bg-slate-50 p-1 rounded-lg mb-6">
+          <div className="flex items-center gap-2 bg-transparent p-1 rounded-lg mb-6">
             <button
               onClick={() => setActiveTab('orders')}
-              className={`flex-1 px-4 py-2 rounded-md font-medium transition-all ${
+              className={`flex-1 px-4 py-2 rounded-full font-medium transition-all ${
                 activeTab === 'orders'
-                  ? 'bg-white text-slate-900 shadow-sm border border-amber-200'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-slate-900 text-white shadow'
+                  : 'bg-white text-slate-700 hover:shadow-sm'
               }`}
             >
               Active Orders ({activeOrders.length})
             </button>
             <button
               onClick={() => setActiveTab('completed')}
-              className={`flex-1 px-4 py-2 rounded-md font-medium transition-all ${
+              className={`flex-1 px-4 py-2 rounded-full font-medium transition-all ${
                 activeTab === 'completed'
-                  ? 'bg-white text-slate-900 shadow-sm border border-amber-200'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-slate-900 text-white shadow'
+                  : 'bg-white text-slate-700 hover:shadow-sm'
               }`}
             >
               Completed Orders ({completedOrders.length})
@@ -238,13 +239,13 @@ export default function CashierDashboard() {
 
           {/* Stats Cards */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-            <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
+            <div className="bg-amber-50 border border-amber-100 rounded-2xl p-4">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center">
                   <span className="text-lg">⏳</span>
                 </div>
                 <div>
-                  <div className="text-2xl font-bold text-amber-900">
+                  <div className="text-2xl font-bold text-amber-800">
                     {orders.filter(o => o.status === 'pending').length}
                   </div>
                   <div className="text-sm text-amber-700">Pending</div>
@@ -252,13 +253,13 @@ export default function CashierDashboard() {
               </div>
             </div>
             
-            <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+            <div className="bg-blue-50 border border-blue-100 rounded-2xl p-4">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
                   <span className="text-lg">👨‍🍳</span>
                 </div>
                 <div>
-                  <div className="text-2xl font-bold text-blue-900">
+                  <div className="text-2xl font-bold text-blue-800">
                     {orders.filter(o => o.status === 'preparing').length}
                   </div>
                   <div className="text-sm text-blue-700">Preparing</div>
@@ -266,13 +267,13 @@ export default function CashierDashboard() {
               </div>
             </div>
             
-            <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4">
+            <div className="bg-emerald-50 border border-emerald-100 rounded-2xl p-4">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center">
                   <span className="text-lg">✅</span>
                 </div>
                 <div>
-                  <div className="text-2xl font-bold text-emerald-900">
+                  <div className="text-2xl font-bold text-emerald-800">
                     {orders.filter(o => o.status === 'ready').length}
                   </div>
                   <div className="text-sm text-emerald-700">Ready</div>
@@ -280,7 +281,7 @@ export default function CashierDashboard() {
               </div>
             </div>
             
-            <div className="bg-slate-50 border border-slate-200 rounded-xl p-4">
+            <div className="bg-white border border-slate-100 rounded-2xl p-4">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center">
                   <span className="text-lg">✨</span>
@@ -304,9 +305,9 @@ export default function CashierDashboard() {
               {activeOrders.map((order) => {
                 const statusInfo = getStatusInfo(order.status)
                 return (
-                  <div key={order.id} className="bg-white rounded-2xl border border-slate-200 hover:border-amber-200 transition-all duration-200 overflow-hidden shadow-sm">
+                  <div key={order.id} className="bg-white rounded-3xl border border-slate-100 hover:border-amber-100 transition-all duration-200 overflow-hidden shadow-sm">
                     {/* Order Header */}
-                    <div className="bg-slate-50 border-b border-slate-200 p-4">
+                    <div className="bg-slate-50 border-b border-slate-100 p-4">
                       <div className="flex items-center justify-between">
                         <div>
                           <h3 className="font-bold text-slate-900">#{order.orderNumber}</h3>
@@ -314,8 +315,15 @@ export default function CashierDashboard() {
                             {new Date(order.createdAt).toLocaleTimeString()}
                           </p>
                         </div>
-                        <div className={`px-3 py-1 rounded-full text-xs font-medium border ${statusInfo.color}`}>
-                          {statusInfo.icon} {statusInfo.label}
+                        <div className="flex items-center gap-2">
+                          {order.paymentMethod && (
+                            <span className="px-2 py-1 rounded-full text-[10px] font-medium border bg-slate-50 text-slate-700 border-slate-200 capitalize">
+                              {order.paymentMethod === 'gcash' || order.paymentMethod === 'ewallet' ? 'E-Wallet' : order.paymentMethod}
+                            </span>
+                          )}
+                          <span className={`px-3 py-1 rounded-full text-xs font-medium border ${statusInfo.color}`}>
+                            {statusInfo.icon} {statusInfo.label}
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -386,7 +394,7 @@ export default function CashierDashboard() {
             {completedOrders.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {completedOrders.map((order) => (
-                  <div key={order.id} className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+                  <div key={order.id} className="bg-white rounded-3xl border border-slate-100 p-6 shadow-sm">
                     <div className="flex items-center justify-between mb-4">
                       <h3 className="font-bold text-slate-900">#{order.orderNumber}</h3>
                       <div className="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-medium">
