@@ -133,6 +133,20 @@ export default function Home() {
       url.search = ''
       window.history.replaceState({}, '', url.toString())
 
+      // Update payment status to paid since payment was successful
+      // But keep order status as pending for cashier to manage
+      fetch('/api/payments/confirm', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          orderId,
+          paymentStatus: 'paid',
+          eventType: 'manual_confirmation'
+        })
+      }).catch(error => {
+        console.error('Failed to confirm payment:', error)
+      })
+
       // Open confirmation step and start tracking
       // These setters exist earlier in this component
       setOrderNumber(orderNumber)
@@ -344,7 +358,7 @@ export default function Home() {
   }
 
   const getTax = () => {
-    return Math.round(getTotalPrice() * 0.1) // 10% tax
+    return Math.round(getTotalPrice() * 0.12) // 12% VAT
   }
 
   const getFinalTotal = () => {
@@ -594,16 +608,16 @@ export default function Home() {
               <p className="text-slate-600 mb-8 max-w-xl text-lg leading-relaxed">
                 Ginagawa naming espesyal ang bawat kape at pastry. Sulit ang lasa, sulit ang karanasan.
               </p>
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-4 flex-wrap">
                 <button
                   onClick={() => scrollToSection('how-to-order')}
-                  className="bg-amber-600 text-white px-8 py-4 rounded-xl font-semibold shadow-lg hover:bg-amber-700 hover:shadow-xl transition-all duration-300 hover:scale-105"
+                  className="bg-amber-600 text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:bg-amber-700 hover:shadow-xl transition-all duration-300 hover:scale-105 text-sm sm:text-base"
                 >
                   Paano Mag-order
                 </button>
                 <button
                   onClick={() => scrollToSection('menu')}
-                  className="text-amber-600 hover:text-amber-700 font-medium flex items-center gap-2 transition-all duration-300 hover:scale-105"
+                  className="text-amber-600 hover:text-amber-700 font-medium flex items-center gap-2 transition-all duration-300 hover:scale-105 text-sm sm:text-base"
                 >
                   Tingnan ang Menu
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -618,9 +632,9 @@ export default function Home() {
               <img
                 src="/images/landing_image.png"
                 alt="Delicious coffee and pastries"
-                className="w-full max-w-lg mx-auto drop-shadow-2xl rounded-3xl"
+                className="w-full max-w-md sm:max-w-lg mx-auto drop-shadow-2xl rounded-3xl"
               />
-              <div className="hidden md:block absolute -top-4 -right-4 w-24 h-24 bg-amber-200 rounded-full blur-2xl opacity-60"></div>
+              <div className="hidden md:block absolute -top-4 -right-4 w-20 sm:w-24 h-20 sm:h-24 bg-amber-200 rounded-full blur-2xl opacity-60"></div>
             </div>
           </div>
         </div>
@@ -666,11 +680,11 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-6">
+          <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {bestSellers.length > 0 ? (
               bestSellers.slice(0, 3).map((bestSeller, index) => (
                 <div key={bestSeller.id} className="bg-white rounded-2xl border border-amber-100 p-6 text-center hover:shadow-lg hover:border-amber-200 transition-all duration-300 animate-in fade-in-0 slide-in-from-bottom-2">
-                  <div className="relative mx-auto w-40 h-40 mb-4">
+                  <div className="relative mx-auto w-28 h-28 sm:w-40 sm:h-40 mb-4">
                     <img
                       src={getBestSellerImagePath(bestSeller) || getPlaceholderImage(bestSeller.category)}
                       alt={bestSeller.name}
@@ -697,7 +711,7 @@ export default function Home() {
               // Fallback cards when no best sellers data
               Array.from({ length: 3 }).map((_, index) => (
                 <div key={index} className="bg-white rounded-2xl border border-amber-100 p-6 text-center hover:shadow-lg transition">
-                  <div className="relative mx-auto w-40 h-40 mb-4 bg-amber-50 rounded-2xl flex items-center justify-center">
+                  <div className="relative mx-auto w-28 h-28 sm:w-40 sm:h-40 mb-4 bg-amber-50 rounded-2xl flex items-center justify-center">
                     <div className="text-4xl text-amber-300">☕</div>
                   </div>
                   <div className="font-semibold text-slate-900 mb-1">Loading...</div>
@@ -721,9 +735,9 @@ export default function Home() {
       <div id="menu" className="bg-white relative overflow-hidden">
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-5">
-          <div className="absolute top-20 left-10 w-32 h-32 bg-amber-200 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-20 right-10 w-40 h-40 bg-amber-300 rounded-full blur-3xl"></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-60 h-60 bg-amber-100 rounded-full blur-3xl"></div>
+          <div className="absolute top-12 left-6 w-20 h-20 sm:w-32 sm:h-32 bg-amber-200 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-12 right-6 w-28 h-28 sm:w-40 sm:h-40 bg-amber-300 rounded-full blur-3xl"></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-36 h-36 sm:w-60 sm:h-60 bg-amber-100 rounded-full blur-3xl"></div>
         </div>
         
         <div className="max-w-7xl mx-auto px-6 py-16 relative">
@@ -782,7 +796,7 @@ export default function Home() {
                   className="bg-white rounded-2xl border border-amber-100 p-6 text-center hover:shadow-xl hover:border-amber-200 transition-all duration-500 hover:scale-105 animate-in fade-in-0 slide-in-from-bottom-2 group"
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
-                  <div className="relative mx-auto w-40 h-40 mb-4 overflow-hidden rounded-2xl">
+                  <div className="relative mx-auto w-28 h-28 sm:w-40 sm:h-40 mb-4 overflow-hidden rounded-2xl">
                     <img
                       src={getMenuImagePath(product) || getPlaceholderImage(product.category)}
                       alt={product.name}
@@ -945,7 +959,7 @@ export default function Home() {
           />
           <div
             onClick={(e) => e.stopPropagation()}
-            className="relative bg-white w-full max-w-5xl h-[100vh] sm:h-auto sm:max-h-[85vh] rounded-none sm:rounded-3xl overflow-hidden shadow-2xl border border-slate-200"
+            className="relative bg-white w-full max-w-[95vw] sm:max-w-5xl max-h-[95vh] sm:max-h-[85vh] rounded-none sm:rounded-3xl overflow-hidden shadow-2xl border border-slate-200"
           >
             
             {/* Step Navigation - Minimalist */}
@@ -995,7 +1009,7 @@ export default function Home() {
             </div>
 
             {/* Content Area */}
-            <div className="p-4 sm:p-8 h-[calc(100vh-96px)] sm:max-h-[calc(85vh-140px)] overflow-y-auto overscroll-contain scroll-smooth">
+            <div className="p-4 sm:p-8 max-h-[85vh] sm:max-h-[calc(85vh-140px)] overflow-y-auto overscroll-contain scroll-smooth">
               
               {/* Step 1: Menu Selection */}
               {currentStep === 'menu' && (
@@ -1008,12 +1022,12 @@ export default function Home() {
                     {cart.length > 0 && (
                       <button
                         onClick={() => setCurrentStep('checkout')}
-                        className="bg-slate-900 text-white px-6 py-3 rounded-2xl font-semibold hover:bg-slate-800 transition-all duration-300 flex items-center gap-3 shadow-lg hover:shadow-xl hover:scale-105"
+                        className="bg-slate-900 text-white px-3 py-2 sm:px-6 sm:py-3 rounded-2xl font-semibold hover:bg-slate-800 transition-all duration-300 flex items-center gap-2 sm:gap-3 shadow-lg hover:shadow-xl hover:scale-105 text-sm sm:text-base"
                       >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01" />
                         </svg>
-                        Cart ({cart.length})
+                        <span className="whitespace-nowrap">Cart ({cart.length})</span>
                       </button>
                     )}
                   </div>
@@ -1052,7 +1066,7 @@ export default function Home() {
                   </div>
 
                   {/* Products Grid - Fixed Height Container */}
-                  <div className="min-h-[400px]">
+                  <div className="min-h-[280px] sm:min-h-[400px]">
                     {filteredProducts.length > 0 ? (
                       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                         {filteredProducts.map((product) => (
@@ -1082,7 +1096,7 @@ export default function Home() {
                         ))}
                       </div>
                     ) : (
-                      <div className="flex items-center justify-center h-[400px]">
+                      <div className="flex items-center justify-center h-[300px] sm:h-[400px]">
                         <div className="text-center">
                           <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
                             <svg className="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
