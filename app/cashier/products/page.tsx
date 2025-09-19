@@ -108,14 +108,14 @@ export default function CashierProductsPage() {
       </div>
 
       {/* Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
         {filtered.map((product, index) => (
           <div
             key={product.id}
-            className="bg-white rounded-3xl border border-slate-100 p-6 text-center hover:shadow-lg transition-all duration-300 animate-in fade-in-0"
+            className="bg-white rounded-3xl border border-slate-100 p-4 sm:p-6 text-center hover:shadow-lg transition-all duration-300 animate-in fade-in-0"
             style={{ animationDelay: `${index * 60}ms` }}
           >
-            <div className="relative mx-auto w-36 h-36 mb-4 overflow-hidden rounded-2xl bg-slate-50 flex items-center justify-center">
+            <div className="relative mx-auto w-28 h-28 sm:w-36 sm:h-36 mb-4 overflow-hidden rounded-2xl bg-slate-50 flex items-center justify-center">
               <img
                 src={getMenuImagePath(product)}
                 alt={product.name}
