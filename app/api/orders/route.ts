@@ -25,6 +25,7 @@ export async function POST(request: Request) {
           orderType,
           totalCents: totalAmount,
           paymentMethod,
+          paymentStatus: paymentMethod === 'cash' ? 'paid' : 'pending',
           status: 'pending'
         }
       })
@@ -170,6 +171,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ ok: false, error: e?.message }, { status: 500 })
   }
 }
+
 
 
 
