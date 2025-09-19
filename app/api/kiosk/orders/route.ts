@@ -25,6 +25,7 @@ export async function POST(request: Request) {
           orderType: 'kiosk',
           totalCents: totalAmount,
           paymentMethod,
+          paymentStatus: paymentMethod === 'cash' ? 'paid' : 'pending',
         }
       })
 
