@@ -1,5 +1,6 @@
 'use client'
 
+import Head from 'next/head'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 
@@ -52,13 +53,16 @@ export default function CashierLayout({ children }: { children: React.ReactNode 
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
+      <Head>
+        <title>SulitServe Café | Cashier</title>
+      </Head>
       {/* Header */}
       <div className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-amber-100">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex h-16 items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 bg-gradient-to-br from-amber-600 to-amber-800 rounded-lg flex items-center justify-center shadow-sm">
-                <span className="text-white font-bold text-sm">S</span>
+                <img src="/images/landing_image.png" alt="SulitServe" className="w-full h-full object-cover" />
               </div>
               <div className="hidden sm:block">
                 <div className="text-sm font-semibold text-slate-900">SulitServe Café</div>
