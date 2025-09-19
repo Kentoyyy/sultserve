@@ -151,7 +151,7 @@ export default function OrderingModal({ isOpen, onClose }: OrderingModalProps) {
   }
 
   const getTax = () => {
-    return Math.round(getTotalPrice() * 0.1) // 10% tax
+    return Math.round(getTotalPrice() * 0.12) // 12% VAT
   }
 
   const getFinalTotal = () => {
@@ -233,9 +233,9 @@ export default function OrderingModal({ isOpen, onClose }: OrderingModalProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div aria-hidden className="absolute inset-0 bg-white/40 backdrop-blur-md" onClick={onClose} />
-      <div onClick={(e) => e.stopPropagation()} className="bg-white rounded-3xl w-full max-w-6xl h-[90vh] flex overflow-hidden shadow-2xl relative">
+      <div onClick={(e) => e.stopPropagation()} className="bg-white rounded-3xl w-full max-w-[95vw] sm:max-w-6xl max-h-[95vh] sm:max-h-[90vh] flex flex-col sm:flex-row overflow-hidden shadow-2xl relative">
         {/* Left Panel - Menu */}
-        <div className="flex-1 p-8 overflow-y-auto">
+  <div className="flex-1 p-4 sm:p-8 overflow-y-auto">
           {/* Header */}
           <div className="flex items-center justify-between mb-8">
             <div>
@@ -294,15 +294,15 @@ export default function OrderingModal({ isOpen, onClose }: OrderingModalProps) {
             <div className="flex items-center justify-center h-64">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-rose-500"></div>
             </div>
-          ) : (
-            <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
               {filteredProducts.map((product) => (
                 <div key={product.id} className="bg-white rounded-2xl border border-slate-100 p-5 hover:shadow-lg hover:border-rose-200 transition-all group">
                   <div className="relative mb-4">
                     <img
                       src={getProductImagePath(product) || getPlaceholderImage(product.category)}
                       alt={product.name}
-                      className="w-full h-40 object-cover rounded-xl"
+                      className="w-full h-28 sm:h-36 md:h-40 object-cover rounded-xl"
                     />
                     <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 rounded-xl transition-all"></div>
                   </div>
@@ -344,7 +344,7 @@ export default function OrderingModal({ isOpen, onClose }: OrderingModalProps) {
         </div>
 
         {/* Right Panel - Order Bill */}
-        <div className="w-80 bg-slate-50 border-l border-slate-200 p-6 flex flex-col">
+  <div className="w-full sm:w-80 bg-slate-50 border-t sm:border-t-0 sm:border-l border-slate-200 p-4 sm:p-6 flex flex-col">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 bg-rose-500 rounded-full flex items-center justify-center">
               <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -450,7 +450,7 @@ export default function OrderingModal({ isOpen, onClose }: OrderingModalProps) {
                     <button
                       key={method.id}
                       onClick={() => setSelectedPaymentMethod(method.id)}
-                      className={`p-4 rounded-xl border text-center transition-all ${
+                      className={`p-3 sm:p-4 rounded-xl border text-center transition-all ${
                         selectedPaymentMethod === method.id
                           ? 'border-slate-900 bg-slate-900 text-white shadow-md'
                           : 'border-slate-200 hover:border-slate-300 bg-white'
@@ -464,7 +464,7 @@ export default function OrderingModal({ isOpen, onClose }: OrderingModalProps) {
               </div>
 
               {/* Place Order Button */}
-              <button onClick={placeOrder} className="w-full bg-rose-500 text-white py-4 rounded-xl font-bold text-lg hover:bg-rose-600 transition-all shadow-lg hover:shadow-xl">
+              <button onClick={placeOrder} className="w-full bg-rose-500 text-white py-3 sm:py-4 rounded-xl font-bold text-base sm:text-lg hover:bg-rose-600 transition-all shadow-lg hover:shadow-xl">
                 Place Order
               </button>
             </div>
