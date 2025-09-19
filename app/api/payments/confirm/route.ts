@@ -8,7 +8,10 @@ export async function POST(request: Request) {
     const body = await request.json()
     const { orderId, paymentStatus, eventType } = body
 
+    console.log('Payment confirmation received:', { orderId, paymentStatus, eventType, fullBody: body })
+
     if (!orderId) {
+      console.log('No orderId provided in webhook')
       return NextResponse.json({ ok: false, error: 'orderId required' }, { status: 400 })
     }
 
@@ -18,13 +21,14 @@ export async function POST(request: Request) {
     }
 
     const nextPaymentStatus = typeof paymentStatus === 'string' ? paymentStatus : 'unknown'
-    const status = nextPaymentStatus === 'paid' ? 'confirmed' : order.status
+    // Only update payment status, let cashier manage order status
+    const status = order.status // Keep current order status
 
     const updated = await prisma.order.update({
       where: { id: orderId },
       data: {
         paymentStatus: nextPaymentStatus,
-        status,
+        // Don't update order status - let cashier manage it
       },
     })
 
@@ -34,5 +38,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, error: 'Internal error' }, { status: 500 })
   }
 }
+
 
 
