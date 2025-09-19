@@ -112,8 +112,12 @@ async def paymongo_webhook(
     # Reconstruct raw body isn't trivial in FastAPI; reuse dict to string
     import json
 
+    print(f"Webhook received: {json.dumps(body, indent=2)}")
+    print(f"Signature: {paymongo_signature}")
+
     raw = json.dumps(body, separators=(",", ":")).encode()
     if WEBHOOK_SECRET and not _verify_signature(raw, paymongo_signature or "", WEBHOOK_SECRET):
+        print("Invalid signature!")
         raise HTTPException(status_code=400, detail="Invalid signature")
 
     event_type = body.get("data", {}).get("attributes", {}).get("type") or body.get("type")
@@ -130,6 +134,10 @@ async def paymongo_webhook(
     if isinstance(metadata, dict):
         order_id = metadata.get("order_id")
 
+    print(f"Event type: {event_type}")
+    print(f"Order ID: {order_id}")
+    print(f"Metadata: {metadata}")
+
     status_map = {
         "checkout_session.payment.paid": "paid",
         "payment.paid": "paid",
@@ -138,16 +146,22 @@ async def paymongo_webhook(
     }
     mapped = status_map.get(event_type, "unknown")
 
-    async with httpx.AsyncClient(timeout=20) as client:
-        await client.post(
-            NEXT_CONFIRM_URL,
-            json={
-                "orderId": order_id,
-                "eventType": event_type,
-                "paymentStatus": mapped,
-                "raw": body,
-            },
-        )
+    print(f"Mapped status: {mapped}")
+
+    if order_id:
+        async with httpx.AsyncClient(timeout=20) as client:
+            response = await client.post(
+                NEXT_CONFIRM_URL,
+                json={
+                    "orderId": order_id,
+                    "eventType": event_type,
+                    "paymentStatus": mapped,
+                    "raw": body,
+                },
+            )
+            print(f"Confirmation response: {response.status_code} - {response.text}")
+    else:
+        print("No order_id found, skipping confirmation")
 
     return {"ok": True}
 
