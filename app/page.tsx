@@ -1,7 +1,8 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
-import { useState, useEffect } from 'react'
+// import { useRouter } from 'next/navigation'
+import { useState, useEffect, useCallback } from 'react'
+import Image from 'next/image'
 // import OrderingModal from '@/components/OrderingModal'
 
 interface Product {
@@ -54,14 +55,14 @@ function getPlaceholderImage(category: string | null): string {
 }
 
 export default function Home() {
-  const router = useRouter()
+  // const router = useRouter()
   const [categories, setCategories] = useState<Category[]>([])
   const [products, setProducts] = useState<Product[]>([])
   const [bestSellers, setBestSellers] = useState<BestSeller[]>([])
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [loading, setLoading] = useState(true)
-  const [currentTime, setCurrentTime] = useState('')
-  const [lastUpdate, setLastUpdate] = useState<number>(Date.now())
+  // const [currentTime, setCurrentTime] = useState('')
+  // const [lastUpdate, setLastUpdate] = useState<number>(Date.now())
   const [lastServerUpdate, setLastServerUpdate] = useState<number>(0)
   const [lastBestSellersUpdate, setLastBestSellersUpdate] = useState<number>(0)
   const [isOrderingModalOpen, setIsOrderingModalOpen] = useState(false)
@@ -69,7 +70,7 @@ export default function Home() {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('cash')
   const [currentStep, setCurrentStep] = useState<'menu' | 'checkout' | 'confirmation' | 'customize' | 'track' | 'receipt'>('menu')
   const [orderNumber, setOrderNumber] = useState<string>('')
-  const [lastOrderId, setLastOrderId] = useState<string>('')
+  // const [lastOrderId, setLastOrderId] = useState<string>('')
   const [lastReceipt, setLastReceipt] = useState<{
     items: Array<{ name: string, quantity: number, price: number, total: number }>
     subtotal: number
@@ -94,11 +95,11 @@ export default function Home() {
   useEffect(() => {
     const updateTime = () => {
       const now = new Date()
-      setCurrentTime(now.toLocaleTimeString('en-US', { 
-        hour12: true,
-        hour: '2-digit',
-        minute: '2-digit'
-      }))
+      // setCurrentTime(now.toLocaleTimeString('en-US', {
+      //   hour12: true,
+      //   hour: '2-digit',
+      //   minute: '2-digit'
+      // }))
     }
     
     updateTime()
@@ -118,7 +119,7 @@ export default function Home() {
     }, 10000) // 10 second timeout
     
     return () => clearTimeout(timeout)
-  }, [])
+  }, [loading])
 
   // Handle return from PayMongo success URL
   useEffect(() => {
@@ -150,7 +151,7 @@ export default function Home() {
       // Open confirmation step and start tracking
       // These setters exist earlier in this component
       setOrderNumber(orderNumber)
-      setLastOrderId(orderId)
+      // setLastOrderId(orderId)
       setOrderStatus('pending')
       setIsOrderingModalOpen(true)
       setCurrentStep('confirmation')
@@ -163,19 +164,20 @@ export default function Home() {
           if (res.ok) {
             const data = await res.json()
             if (data?.ok) {
-              const items = (data.order.items || []).map((i:any) => ({
+              const items = (data.order.items || []).map((i: { productName: string; quantity: number; unitPriceCents: number; totalCents: number }) => ({
                 name: i.productName,
                 quantity: i.quantity,
                 price: i.unitPriceCents / 100,
                 total: i.totalCents / 100,
               }))
-              const subtotal = items.reduce((s:number,it:any)=>s+it.total,0)
+              const subtotal = items.reduce((s: number, it: { total: number }) => s + it.total, 0)
               const total = data.order.totalCents / 100
               const tax = Math.max(0, total - subtotal)
               setLastReceipt({ items, subtotal, tax, total, paymentMethod: data.order.paymentMethod || 'online' })
             }
           }
-        } catch (e) {
+        } catch (e: unknown) {
+          console.error('Error loading receipt:', e)
           // ignore
         }
       })()
@@ -199,7 +201,7 @@ export default function Home() {
           // Check if server data is newer than our last update
           if (serverTimestamp > lastServerUpdate) {
             setProducts(newProducts)
-            setLastUpdate(Date.now())
+            // setLastUpdate(Date.now())
             setLastServerUpdate(serverTimestamp)
           }
         }
@@ -406,7 +408,7 @@ export default function Home() {
         // If online payment, initiate PayMongo checkout and redirect
         if (['card', 'ewallet', 'gcash'].includes(selectedPaymentMethod)) {
           const orderId = result.order.id
-          setLastOrderId(orderId)
+          // setLastOrderId(orderId)
           const checkoutResp = await fetch('/api/payments/checkout', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -473,7 +475,7 @@ export default function Home() {
     return interval
   }
 
-  const resetOrder = () => {
+  const resetOrder = useCallback(() => {
     // Clear tracking interval if active
     if (trackingInterval) {
       clearInterval(trackingInterval)
@@ -485,7 +487,7 @@ export default function Home() {
     setOrderNumber('')
     setOrderStatus('pending')
     setSelectedPaymentMethod('cash')
-  }
+  }, [trackingInterval])
 
   if (loading) {
     return (
@@ -527,7 +529,7 @@ export default function Home() {
           <div className="flex items-center justify-between">
             {/* Logo (use favicon image) */}
             <div className="flex items-center gap-3">
-              <img src="/images/landing_image.png" alt="SulitServe logo" className="w-8 h-8 rounded-lg object-cover shadow-sm" />
+              <Image src="/images/landing_image.png" alt="SulitServe logo" width={32} height={32} className="w-8 h-8 rounded-lg object-cover shadow-sm" />
               <div className="hidden sm:block">
                 <h1 className="text-lg font-semibold text-slate-900">SulitServe</h1>
                 <p className="text-xs text-amber-600 font-medium">Café</p>
@@ -629,9 +631,11 @@ export default function Home() {
 
             {/* Hero Image */}
             <div className="relative">
-              <img
+              <Image
                 src="/images/landing_image.png"
                 alt="Delicious coffee and pastries"
+                width={600}
+                height={400}
                 className="w-full max-w-md sm:max-w-lg mx-auto drop-shadow-2xl rounded-3xl"
               />
               <div className="hidden md:block absolute -top-4 -right-4 w-20 sm:w-24 h-20 sm:h-24 bg-amber-200 rounded-full blur-2xl opacity-60"></div>
@@ -685,9 +689,11 @@ export default function Home() {
               bestSellers.slice(0, 3).map((bestSeller, index) => (
                 <div key={bestSeller.id} className="bg-white rounded-2xl border border-amber-100 p-6 text-center hover:shadow-lg hover:border-amber-200 transition-all duration-300 animate-in fade-in-0 slide-in-from-bottom-2">
                   <div className="relative mx-auto w-28 h-28 sm:w-40 sm:h-40 mb-4">
-                    <img
+                    <Image
                       src={getBestSellerImagePath(bestSeller) || getPlaceholderImage(bestSeller.category)}
                       alt={bestSeller.name}
+                      width={160}
+                      height={160}
                       className="w-full h-full object-cover rounded-2xl"
                     />
                     {bestSeller.totalSold > 0 && (
@@ -797,9 +803,11 @@ export default function Home() {
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
                   <div className="relative mx-auto w-28 h-28 sm:w-40 sm:h-40 mb-4 overflow-hidden rounded-2xl">
-                    <img
+                    <Image
                       src={getMenuImagePath(product) || getPlaceholderImage(product.category)}
                       alt={product.name}
+                      width={160}
+                      height={160}
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -862,7 +870,7 @@ export default function Home() {
               </div>
             </div>
             <div>
-              <img src="https://images.unsplash.com/photo-1504754524776-8f4f37790ca0?q=80&w=1200&auto=format&fit=crop" alt="About image" className="rounded-2xl w-full object-cover shadow-lg" />
+              <Image src="https://images.unsplash.com/photo-1504754524776-8f4f37790ca0?q=80&w=1200&auto=format&fit=crop" alt="About image" width={600} height={400} className="rounded-2xl w-full object-cover shadow-lg" />
             </div>
           </div>
         </div>
@@ -888,7 +896,7 @@ export default function Home() {
               </div>
               <h4 className="text-xl font-bold text-slate-900 mb-3">1. Tumingin ng Menu</h4>
               <p className="text-slate-600">
-                I-click ang "Paano Mag-order" o mag-scroll pababa para makita ang buong menu kasama ang presyo at kategorya.
+                I-click ang &quot;Paano Mag-order&quot; o mag-scroll pababa para makita ang buong menu kasama ang presyo at kategorya.
               </p>
             </div>
 
@@ -931,7 +939,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-6 py-12">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-4">
-              <img src="/images/landing_image.png" alt="SulitServe logo" className="w-10 h-10 rounded-xl object-cover shadow-lg" />
+              <Image src="/images/landing_image.png" alt="SulitServe logo" width={40} height={40} className="w-10 h-10 rounded-xl object-cover shadow-lg" />
               <div>
                 <div className="font-bold text-xl">SulitServe Café</div>
                 <div className="text-amber-200">Quality Coffee & Fresh Pastries</div>
@@ -1072,9 +1080,11 @@ export default function Home() {
                         {filteredProducts.map((product) => (
                           <div key={product.id} className="bg-white rounded-2xl border border-slate-200 p-5 hover:shadow-xl hover:border-slate-300 transition-all group">
                             <div className="relative mb-4">
-                              <img
+                              <Image
                                 src={getMenuImagePath(product) || getPlaceholderImage(product.category)}
                                 alt={product.name}
+                                width={144}
+                                height={144}
                                 className="w-full h-36 object-cover rounded-xl"
                               />
                             </div>
@@ -1136,9 +1146,11 @@ export default function Home() {
                         {cart.map((item, index) => (
                           <div key={`${item.product.id}-${index}`} className="bg-slate-50 rounded-xl p-4">
                             <div className="flex items-center gap-3">
-                              <img
+                              <Image
                                 src={getMenuImagePath(item.product) || getPlaceholderImage(item.product.category)}
                                 alt={item.product.name}
+                                width={48}
+                                height={48}
                                 className="w-12 h-12 object-cover rounded-lg"
                               />
                               <div className="flex-1">
@@ -1397,7 +1409,7 @@ export default function Home() {
                   {/* Receipt Info */}
                   <div className="bg-white rounded-2xl border border-slate-200 p-6 mb-8 max-w-sm mx-auto">
                     <h3 className="text-lg font-bold text-slate-900 mb-4">Digital Receipt</h3>
-                    <p className="text-sm text-slate-600 mb-4">Click "View Receipt" to see your order details</p>
+                    <p className="text-sm text-slate-600 mb-4">Click &quot;View Receipt&quot; to see your order details</p>
                     
                     <div className="flex items-center justify-center mb-4">
                       <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center">
