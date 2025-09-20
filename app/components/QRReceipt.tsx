@@ -1,6 +1,7 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
+import Image from 'next/image'
 import QRCode from 'qrcode'
 
 interface QRReceiptProps {
@@ -30,11 +31,11 @@ export default function QRReceipt({
   orderDate,
   onClose
 }: QRReceiptProps) {
-  const canvasRef = useRef<HTMLCanvasElement>(null)
+  // const canvasRef = useRef<HTMLCanvasElement>(null)
   const [qrDataUrl, setQrDataUrl] = useState<string>('')
 
   // Generate receipt data for QR code
-  const receiptData = {
+  const receiptData = useMemo(() => ({
     orderNumber,
     items: items.map(item => ({
       name: item.product.name,
@@ -48,7 +49,7 @@ export default function QRReceipt({
     paymentMethod,
     orderDate,
     timestamp: new Date().toISOString()
-  }
+  }), [orderNumber, items, totalCents, taxCents, paymentMethod, orderDate])
 
   useEffect(() => {
     const generateQR = async () => {
@@ -118,7 +119,7 @@ export default function QRReceipt({
         
         {qrDataUrl && (
           <div className="flex justify-center mb-4">
-            <img src={qrDataUrl} alt="QR Code Receipt" className="w-48 h-48" />
+            <Image src={qrDataUrl} alt="QR Code Receipt" width={192} height={192} className="w-48 h-48" />
           </div>
         )}
         
