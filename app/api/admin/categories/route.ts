@@ -12,9 +12,9 @@ export async function GET() {
       ]
     })
     return NextResponse.json(categories)
-  } catch (e: any) {
+  } catch (e: unknown) {
     console.error('Error fetching categories:', e)
-    return NextResponse.json({ ok: false, error: e?.message }, { status: 500 })
+    return NextResponse.json({ ok: false, error: e instanceof Error ? e.message : 'Unknown error' }, { status: 500 })
   }
 }
 
@@ -32,9 +32,9 @@ export async function POST(request: Request) {
     })
     
     return NextResponse.json({ ok: true, id: category.id })
-  } catch (e: any) {
+  } catch (e: unknown) {
     console.error('Error creating category:', e)
-    return NextResponse.json({ ok: false, error: e?.message }, { status: 500 })
+    return NextResponse.json({ ok: false, error: e instanceof Error ? e.message : 'Unknown error' }, { status: 500 })
   }
 }
 
