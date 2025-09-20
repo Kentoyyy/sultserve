@@ -3,9 +3,10 @@
 import Head from 'next/head'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 
 export default function CashierLayout({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<any>(null)
+  const [user, setUser] = useState<{ id: string; username: string; fullName: string; role: { name: string } } | null>(null)
   const router = useRouter()
 
   useEffect(() => {
@@ -62,7 +63,7 @@ export default function CashierLayout({ children }: { children: React.ReactNode 
           <div className="flex h-16 items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 bg-gradient-to-br from-amber-600 to-amber-800 rounded-lg flex items-center justify-center shadow-sm">
-                <img src="/images/landing_image.png" alt="SulitServe" className="w-full h-full object-cover" />
+                <Image src="/images/landing_image.png" alt="SulitServe" width={32} height={32} className="w-full h-full object-cover" />
               </div>
               <div className="hidden sm:block">
                 <div className="text-sm font-semibold text-slate-900">SulitServe Café</div>
