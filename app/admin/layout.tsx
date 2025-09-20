@@ -1,6 +1,7 @@
 'use client'
 
 import { usePathname } from 'next/navigation'
+import Link from 'next/link'
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
@@ -69,7 +70,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               </a>
 
               {/* Products */}
-              <a className={`flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-colors ${
+              <Link className={`flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-colors ${
                 isActive('/admin/products') 
                   ? 'bg-amber-50 text-amber-700 border border-amber-200' 
                   : 'text-slate-700 hover:bg-slate-50 hover:text-amber-700 group'
@@ -84,7 +85,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   </svg>
                 </div>
                 <span>Products</span>
-              </a>
+              </Link>
 
               {/* Inventory */}
               <a className={`flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-colors ${
