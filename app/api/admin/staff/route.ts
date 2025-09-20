@@ -19,8 +19,8 @@ export async function GET() {
     })
     
     return NextResponse.json({ ok: true, data: staff })
-  } catch (e: any) {
-    return NextResponse.json({ ok: false, error: e?.message }, { status: 500 })
+  } catch (e: unknown) {
+    return NextResponse.json({ ok: false, error: e instanceof Error ? e.message : 'Unknown error' }, { status: 500 })
   }
 }
 
@@ -83,9 +83,9 @@ export async function POST(request: Request) {
     })
     
     return NextResponse.json({ ok: true, id: staff.id })
-  } catch (e: any) {
+  } catch (e: unknown) {
     console.error('Error creating staff:', e)
-    return NextResponse.json({ ok: false, error: e?.message }, { status: 500 })
+    return NextResponse.json({ ok: false, error: e instanceof Error ? e.message : 'Unknown error' }, { status: 500 })
   }
 }
 
