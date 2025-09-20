@@ -41,9 +41,9 @@ export async function GET() {
     }))
 
     return NextResponse.json({ ok: true, data: formattedOrders })
-  } catch (e: any) {
+  } catch (e: unknown) {
     console.error('Error fetching orders for cashier:', e)
-    return NextResponse.json({ ok: false, error: e?.message }, { status: 500 })
+    return NextResponse.json({ ok: false, error: e instanceof Error ? e.message : 'Unknown error' }, { status: 500 })
   }
 }
 
@@ -62,7 +62,7 @@ export async function PATCH(request: Request) {
     }
 
     // Update order status and assign to staff if not already assigned
-    const updateData: any = { status }
+    const updateData: Record<string, unknown> = { status }
     
     // If this is the first time a staff member touches this order, assign them
     if (staffId) {
@@ -101,8 +101,8 @@ export async function PATCH(request: Request) {
     })
 
     return NextResponse.json({ ok: true, order: updatedOrder })
-  } catch (e: any) {
+  } catch (e: unknown) {
     console.error('Error updating order status:', e)
-    return NextResponse.json({ ok: false, error: e?.message }, { status: 500 })
+    return NextResponse.json({ ok: false, error: e instanceof Error ? e.message : 'Unknown error' }, { status: 500 })
   }
 }
