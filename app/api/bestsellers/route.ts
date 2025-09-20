@@ -39,7 +39,7 @@ export async function GET() {
       }
       acc[productId].totalSold += item.quantity
       return acc
-    }, {} as Record<string, { product: any, totalSold: number }>)
+    }, {} as Record<string, { product: { id: string; name: string; description: string | null; priceCents: number; imageUrl: string | null; status: string; category: { name: string } | null }, totalSold: number }>)
 
     // Convert to array and sort by quantity, take top 3
     const bestSellers = Object.values(productSales)
@@ -96,8 +96,8 @@ export async function GET() {
       data: bestSellers,
       lastModified: Date.now()
     })
-  } catch (e: any) {
+  } catch (e: unknown) {
     console.error('Error fetching best sellers:', e)
-    return NextResponse.json({ ok: false, error: e?.message }, { status: 500 })
+    return NextResponse.json({ ok: false, error: e instanceof Error ? e.message : 'Unknown error' }, { status: 500 })
   }
 }
