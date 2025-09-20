@@ -4,14 +4,21 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
 // Initialize Supabase client for server-side operations
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+let supabase: any = null
 
-if (!supabaseUrl || !supabaseServiceKey) {
-  throw new Error('Missing Supabase environment variables')
+function getSupabaseClient() {
+  if (supabase) return supabase
+  
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+  if (!supabaseUrl || !supabaseServiceKey) {
+    throw new Error('Missing Supabase environment variables')
+  }
+
+  supabase = createClient(supabaseUrl, supabaseServiceKey)
+  return supabase
 }
-
-const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
 export async function POST(request: Request) {
   try {
@@ -30,8 +37,11 @@ export async function POST(request: Request) {
     // Convert file to buffer
     const buffer = Buffer.from(await file.arrayBuffer())
 
+    // Get Supabase client
+    const supabaseClient = getSupabaseClient()
+
     // Upload to Supabase Storage
-    const { data, error } = await supabase.storage
+    const { data, error } = await supabaseClient.storage
       .from('uploads')
       .upload(filePath, buffer, {
         contentType: file.type,
@@ -45,7 +55,7 @@ export async function POST(request: Request) {
     }
 
     // Get public URL
-    const { data: urlData } = supabase.storage
+    const { data: urlData } = supabaseClient.storage
       .from('uploads')
       .getPublicUrl(filePath)
 
