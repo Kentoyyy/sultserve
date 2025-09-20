@@ -66,9 +66,9 @@ export async function GET() {
     })
     
     return NextResponse.json({ ok: true, data: availability })
-  } catch (e: any) {
+  } catch (e: unknown) {
     console.error('Error checking product availability:', e)
-    return NextResponse.json({ ok: false, error: e?.message }, { status: 500 })
+    return NextResponse.json({ ok: false, error: e instanceof Error ? e.message : 'Unknown error' }, { status: 500 })
   }
 }
 
