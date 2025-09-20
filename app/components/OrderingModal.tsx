@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
 
 interface Product {
   id: string
@@ -162,10 +163,10 @@ export default function OrderingModal({ isOpen, onClose }: OrderingModalProps) {
     return cart.some(item => item.product.id === productId && item.size === size)
   }
 
-  const getCartQuantity = (productId: string, size: string) => {
-    const item = cart.find(item => item.product.id === productId && item.size === size)
-    return item ? item.quantity : 0
-  }
+  // const getCartQuantity = (productId: string, size: string) => {
+  //   const item = cart.find(item => item.product.id === productId && item.size === size)
+  //   return item ? item.quantity : 0
+  // }
 
   const placeOrder = async () => {
     if (cart.length === 0) return
@@ -299,9 +300,11 @@ export default function OrderingModal({ isOpen, onClose }: OrderingModalProps) {
               {filteredProducts.map((product) => (
                 <div key={product.id} className="bg-white rounded-2xl border border-slate-100 p-5 hover:shadow-lg hover:border-rose-200 transition-all group">
                   <div className="relative mb-4">
-                    <img
+                    <Image
                       src={getProductImagePath(product) || getPlaceholderImage(product.category)}
                       alt={product.name}
+                      width={160}
+                      height={160}
                       className="w-full h-28 sm:h-36 md:h-40 object-cover rounded-xl"
                     />
                     <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 rounded-xl transition-all"></div>
@@ -379,9 +382,11 @@ export default function OrderingModal({ isOpen, onClose }: OrderingModalProps) {
                 {cart.map((item, index) => (
                   <div key={`${item.product.id}-${item.size}-${index}`} className="bg-white rounded-xl p-4 shadow-sm">
                     <div className="flex items-center gap-3">
-                      <img
+                      <Image
                         src={getProductImagePath(item.product) || getPlaceholderImage(item.product.category)}
                         alt={item.product.name}
+                        width={48}
+                        height={48}
                         className="w-12 h-12 object-cover rounded-lg"
                       />
                       <div className="flex-1">
