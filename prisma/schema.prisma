@@ -40,7 +40,7 @@ model Staff {
 
 model Category {
   id        String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name      String
+  name      String  @unique
   sortOrder Int     @default(0) @map("sort_order")
   createdAt DateTime @default(now()) @map("created_at")
 
@@ -101,7 +101,7 @@ model Supplier {
 
 model InventoryItem {
   id                 String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name               String
+  name               String  @unique
   unit               String
   quantity           Decimal @default(0)
   lowStockThreshold  Decimal? @map("low_stock_threshold")
