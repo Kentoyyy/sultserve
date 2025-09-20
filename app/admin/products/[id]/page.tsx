@@ -1,4 +1,6 @@
 import { prisma } from '@/lib/prisma'
+import Image from 'next/image'
+import Link from 'next/link'
 
 type Params = { params: Promise<{ id: string }> }
 
@@ -63,7 +65,7 @@ export default async function AdminProductEditPage({ params }: Params) {
             <div>
               <label className="block text-sm mb-1">Image</label>
               <div className="flex items-center gap-3">
-                <img src={product?.imageUrl || '/placeholder.png'} alt="preview" className="w-16 h-16 rounded object-cover border" />
+                <Image src={product?.imageUrl || '/placeholder.png'} alt="preview" width={64} height={64} className="w-16 h-16 rounded object-cover border" />
                 <input name="image_url" defaultValue={product?.imageUrl ?? ''} className="hidden" />
                 <button
                   type="button"
@@ -116,7 +118,7 @@ export default async function AdminProductEditPage({ params }: Params) {
           </div>
           <div className="flex gap-2">
             <button className="rounded border px-4 py-2 hover:bg-neutral-50" type="submit">Save</button>
-            <a className="rounded border px-4 py-2 hover:bg-neutral-50" href="/admin/products">Back</a>
+            <Link className="rounded border px-4 py-2 hover:bg-neutral-50" href="/admin/products">Back</Link>
           </div>
         </form>
       </div>
@@ -144,11 +146,11 @@ export default async function AdminProductEditPage({ params }: Params) {
         </form>
 
         <div className="space-y-3">
-          {groups.map((g: any) => (
+          {groups.map((g: { id: string; name: string; type: string; required: boolean; maxSelect: number | null; options: { id: string; name: string; priceDeltaCents: number }[] }) => (
             <div key={g.id} className="border rounded p-3">
               <div className="font-medium mb-2">{g.name} <span className="text-xs text-neutral-500">({g.type}{g.required ? ', required' : ''}{g.maxSelect ? ', max ' + g.maxSelect : ''})</span></div>
               <ul className="text-sm">
-                {g.options?.map((o: any) => (
+                {g.options?.map((o: { id: string; name: string; priceDeltaCents: number }) => (
                   <li key={o.id} className="flex justify-between border-t first:border-t-0 py-1">
                     <span>{o.name}</span>
                     <span>+₱{(Number(o.priceDeltaCents)/100).toFixed(2)}</span>
