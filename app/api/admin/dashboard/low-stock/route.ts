@@ -23,7 +23,7 @@ export async function GET() {
     // Filter items where quantity <= lowStockThreshold and sort by quantity
     const filteredItems = allItems
       .filter(item => item.lowStockThreshold !== null && item.quantity <= item.lowStockThreshold)
-      .sort((a, b) => a.quantity - b.quantity)
+      .sort((a, b) => Number(a.quantity) - Number(b.quantity))
       .slice(0, 5)
 
     const data = filteredItems.map(item => ({
@@ -34,9 +34,9 @@ export async function GET() {
     }))
 
     return NextResponse.json({ ok: true, data })
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('Dashboard low-stock error:', err)
-    return NextResponse.json({ ok: false, error: err?.message ?? 'error' }, { status: 500 })
+    return NextResponse.json({ ok: false, error: err instanceof Error ? err.message : 'Unknown error' }, { status: 500 })
   }
 }
 
