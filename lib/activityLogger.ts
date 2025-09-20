@@ -12,9 +12,10 @@ interface LogActivityParams {
   entityId?: string
   entityName?: string
   description: string
-  metadata?: Record<string, any>
+  metadata?: Record<string, unknown>
   userId?: string
   userName?: string
+  userType?: 'admin' | 'cashier' | 'customer' | 'system'
 }
 
 export async function logActivity({
@@ -25,7 +26,8 @@ export async function logActivity({
   description,
   metadata,
   userId,
-  userName = 'Admin'
+  userName = 'Admin',
+  userType = 'admin'
 }: LogActivityParams) {
   try {
     // Get request headers for IP and user agent
@@ -42,9 +44,11 @@ export async function logActivity({
         entityId,
         entityName,
         description,
-        metadata,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        metadata: metadata as any,
         ipAddress,
         userAgent,
+        userType,
         userId,
         userName
       }
@@ -61,7 +65,7 @@ export async function logProductActivity(
   productId: string,
   productName: string,
   description: string,
-  metadata?: Record<string, any>
+  metadata?: Record<string, unknown>
 ) {
   return logActivity({
     action,
@@ -78,7 +82,7 @@ export async function logInventoryActivity(
   itemId: string,
   itemName: string,
   description: string,
-  metadata?: Record<string, any>
+  metadata?: Record<string, unknown>
 ) {
   return logActivity({
     action,
@@ -95,7 +99,7 @@ export async function logRecipeActivity(
   productId: string,
   productName: string,
   description: string,
-  metadata?: Record<string, any>
+  metadata?: Record<string, unknown>
 ) {
   return logActivity({
     action,
