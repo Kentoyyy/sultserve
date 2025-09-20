@@ -9,7 +9,7 @@ interface ActivityLog {
   entityId: string | null
   entityName: string | null
   description: string
-  metadata: any
+  metadata: unknown
   userName: string | null
   createdAt: Date
 }
@@ -217,7 +217,7 @@ export function ActivityLogsPageClient({ logs }: Props) {
                       </span>
                       {log.entityName && (
                         <span className="text-sm font-medium text-slate-700">
-                          "{log.entityName}"
+                          &quot;{log.entityName}&quot;
                         </span>
                       )}
                     </div>
@@ -242,7 +242,7 @@ export function ActivityLogsPageClient({ logs }: Props) {
               </div>
               
               {/* Metadata */}
-              {log.metadata && Object.keys(log.metadata).length > 0 && (
+              {log.metadata && typeof log.metadata === 'object' && log.metadata !== null && Object.keys(log.metadata as Record<string, unknown>).length > 0 ? (
                 <details className="mt-3">
                   <summary className="text-xs text-slate-500 cursor-pointer hover:text-slate-700">
                     View Details
@@ -251,7 +251,7 @@ export function ActivityLogsPageClient({ logs }: Props) {
                     {JSON.stringify(log.metadata, null, 2)}
                   </pre>
                 </details>
-              )}
+              ) : null}
             </div>
           ))}
 
