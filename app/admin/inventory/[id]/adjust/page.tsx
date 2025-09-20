@@ -1,20 +1,21 @@
 import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 
-type Params = { params: { id: string } }
+type Params = { params: Promise<{ id: string }> }
 
-export default function AdjustStockPage({ params }: Params) {
+export default async function AdjustStockPage({ params }: Params) {
+  const { id } = await params
   async function adjust(formData: FormData) {
     'use server'
     const change = Number(formData.get('change') || 0)
     const reason = String(formData.get('reason') || 'manual_adjustment')
     await prisma.$transaction(async (tx) => {
       await tx.inventoryItem.update({
-        where: { id: params.id },
+        where: { id },
         data: { quantity: { increment: change } }
       })
       await tx.stockMovement.create({
-        data: { inventoryItemId: params.id, change, reason }
+        data: { inventoryItemId: id, change, reason }
       })
     })
     redirect('/admin/inventory')
