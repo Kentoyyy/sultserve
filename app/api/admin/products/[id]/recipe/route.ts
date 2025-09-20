@@ -22,8 +22,8 @@ export async function GET(_: Request, { params }: Params) {
     })
     
     return NextResponse.json({ ok: true, data: recipe })
-  } catch (e: any) {
-    return NextResponse.json({ ok: false, error: e?.message }, { status: 500 })
+  } catch (e: unknown) {
+    return NextResponse.json({ ok: false, error: e instanceof Error ? e.message : 'Unknown error' }, { status: 500 })
   }
 }
 
@@ -58,7 +58,7 @@ export async function POST(request: Request, { params }: Params) {
       data: {
         productId: id,
         ingredients: {
-          create: ingredients.map((ing: any) => ({
+          create: ingredients.map((ing: { inventoryItemId: string; quantityNeeded: number; unit: string }) => ({
             inventoryItemId: ing.inventoryItemId,
             quantityNeeded: ing.quantityNeeded,
             unit: ing.unit
@@ -75,9 +75,9 @@ export async function POST(request: Request, { params }: Params) {
     })
     
     return NextResponse.json({ ok: true, data: recipe })
-  } catch (e: any) {
+  } catch (e: unknown) {
     console.error('Error creating recipe:', e)
-    return NextResponse.json({ ok: false, error: e?.message }, { status: 500 })
+    return NextResponse.json({ ok: false, error: e instanceof Error ? e.message : 'Unknown error' }, { status: 500 })
   }
 }
 
@@ -91,8 +91,8 @@ export async function DELETE(_: Request, { params }: Params) {
     })
     
     return NextResponse.json({ ok: true })
-  } catch (e: any) {
-    return NextResponse.json({ ok: false, error: e?.message }, { status: 500 })
+  } catch (e: unknown) {
+    return NextResponse.json({ ok: false, error: e instanceof Error ? e.message : 'Unknown error' }, { status: 500 })
   }
 }
 
