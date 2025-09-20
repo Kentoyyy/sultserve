@@ -13,8 +13,8 @@ export async function GET(_: Request, { params }: Params) {
       include: { role: true }
     })
     return NextResponse.json({ ok: true, data: staff })
-  } catch (e: any) {
-    return NextResponse.json({ ok: false, error: e?.message }, { status: 500 })
+  } catch (e: unknown) {
+    return NextResponse.json({ ok: false, error: e instanceof Error ? e.message : 'Unknown error' }, { status: 500 })
   }
 }
 
@@ -29,7 +29,7 @@ export async function PATCH(request: Request, { params }: Params) {
       include: { role: true }
     })
     
-    const updateData: any = {}
+    const updateData: Record<string, unknown> = {}
     if ('fullName' in body) updateData.fullName = body.fullName
     if ('email' in body) updateData.email = body.email
     if ('username' in body) updateData.username = body.username
@@ -46,7 +46,7 @@ export async function PATCH(request: Request, { params }: Params) {
     // Log the activity
     if (originalStaff) {
       const { logActivity } = await import('@/lib/activityLogger')
-      const changes: any = {}
+      const changes: Record<string, unknown> = {}
       
       if (originalStaff.fullName !== updateData.fullName && updateData.fullName) {
         changes.fullName = { from: originalStaff.fullName, to: updateData.fullName }
@@ -70,8 +70,8 @@ export async function PATCH(request: Request, { params }: Params) {
     }
     
     return NextResponse.json({ ok: true })
-  } catch (e: any) {
-    return NextResponse.json({ ok: false, error: e?.message }, { status: 500 })
+  } catch (e: unknown) {
+    return NextResponse.json({ ok: false, error: e instanceof Error ? e.message : 'Unknown error' }, { status: 500 })
   }
 }
 
@@ -97,8 +97,8 @@ export async function DELETE(_: Request, { params }: Params) {
     }
     
     return NextResponse.json({ ok: true })
-  } catch (e: any) {
-    return NextResponse.json({ ok: false, error: e?.message }, { status: 500 })
+  } catch (e: unknown) {
+    return NextResponse.json({ ok: false, error: e instanceof Error ? e.message : 'Unknown error' }, { status: 500 })
   }
 }
 
