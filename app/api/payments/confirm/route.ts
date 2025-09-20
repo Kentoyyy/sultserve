@@ -22,7 +22,7 @@ export async function POST(request: Request) {
 
     const nextPaymentStatus = typeof paymentStatus === 'string' ? paymentStatus : 'unknown'
     // Only update payment status, let cashier manage order status
-    const status = order.status // Keep current order status
+    // const status = order.status // Keep current order status
 
     const updated = await prisma.order.update({
       where: { id: orderId },
