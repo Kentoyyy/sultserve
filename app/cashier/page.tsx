@@ -37,26 +37,6 @@ export default function CashierDashboard() {
   const [ordersPerPage] = useState(6) // 6 orders per page (2 rows of 3)
   const previousOrdersLength = useRef(0)
 
-  useEffect(() => {
-    // Get current staff ID from localStorage
-    const staffData = localStorage.getItem('user')
-    if (staffData) {
-      const staff = JSON.parse(staffData)
-      setCurrentStaffId(staff.id)
-    }
-    
-    fetchOrders()
-    
-    // Real-time polling every 2 seconds for immediate updates
-    const interval = setInterval(() => {
-      if (isAutoRefresh) {
-        fetchOrders()
-      }
-    }, 2000)
-    
-    return () => clearInterval(interval)
-  }, [isAutoRefresh, fetchOrders])
-
   const fetchOrders = useCallback(async () => {
     try {
       const response = await fetch('/api/cashier/orders')
@@ -86,6 +66,26 @@ export default function CashierDashboard() {
     setNotification(message)
     setTimeout(() => setNotification(null), 4000)
   }
+
+  useEffect(() => {
+    // Get current staff ID from localStorage
+    const staffData = localStorage.getItem('user')
+    if (staffData) {
+      const staff = JSON.parse(staffData)
+      setCurrentStaffId(staff.id)
+    }
+    
+    fetchOrders()
+    
+    // Real-time polling every 2 seconds for immediate updates
+    const interval = setInterval(() => {
+      if (isAutoRefresh) {
+        fetchOrders()
+      }
+    }, 2000)
+    
+    return () => clearInterval(interval)
+  }, [isAutoRefresh, fetchOrders])
 
   const updateOrderStatus = async (orderId: string, newStatus: string) => {
     try {
