@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 
 interface OrderItem {
   id: string
@@ -32,7 +32,7 @@ export default function CashierDashboard() {
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [paymentFilter, setPaymentFilter] = useState<string>('all')
   const [isAutoRefresh, setIsAutoRefresh] = useState(true)
-  const [lastUpdated, setLastUpdated] = useState<string>('')
+  // const [lastUpdated, setLastUpdated] = useState<string>('')
   const [currentPage, setCurrentPage] = useState(1)
   const [ordersPerPage] = useState(6) // 6 orders per page (2 rows of 3)
   const previousOrdersLength = useRef(0)
@@ -55,9 +55,9 @@ export default function CashierDashboard() {
     }, 2000)
     
     return () => clearInterval(interval)
-  }, [])
+  }, [isAutoRefresh])
 
-  const fetchOrders = async () => {
+  const fetchOrders = useCallback(async () => {
     try {
       const response = await fetch('/api/cashier/orders')
       if (response.ok) {
@@ -73,14 +73,14 @@ export default function CashierDashboard() {
         previousOrdersLength.current = newOrders.length
         setOrders(newOrders)
         setLastUpdateTime(new Date().toLocaleTimeString())
-        setLastUpdated(new Date().toLocaleTimeString())
+        // setLastUpdated(new Date().toLocaleTimeString())
       }
     } catch (error) {
       console.error('Failed to fetch orders:', error)
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [previousOrdersLength])
 
   const showNotification = (message: string) => {
     setNotification(message)
@@ -441,7 +441,7 @@ export default function CashierDashboard() {
                   <div className="text-xl sm:text-2xl font-bold text-slate-900">
                     ₱{(orders.filter(o => o.status === 'completed').reduce((sum, o) => sum + o.totalAmount, 0) / 100).toFixed(2)}
                   </div>
-                  <div className="text-xs sm:text-sm text-slate-600">Today's Sales</div>
+                  <div className="text-xs sm:text-sm text-slate-600">Today&apos;s Sales</div>
                 </div>
               </div>
             </div>
@@ -460,7 +460,7 @@ export default function CashierDashboard() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
                     <span className="text-sm font-medium text-amber-800">
-                      Showing {activeOrders.length} order(s) matching "{searchTerm}"
+                      Showing {activeOrders.length} order(s) matching &quot;{searchTerm}&quot;
                     </span>
                   </div>
                   <button
@@ -613,7 +613,7 @@ export default function CashierDashboard() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
                     <span className="text-sm font-medium text-amber-800">
-                      Showing {completedOrders.length} order(s) matching "{searchTerm}"
+                      Showing {completedOrders.length} order(s) matching &quot;{searchTerm}&quot;
                     </span>
                   </div>
                   <button
