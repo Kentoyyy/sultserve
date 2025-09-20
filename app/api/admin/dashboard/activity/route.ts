@@ -29,8 +29,8 @@ export async function GET() {
     }))
 
     return NextResponse.json({ ok: true, data })
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('Dashboard activity error:', err)
-    return NextResponse.json({ ok: false, error: err?.message ?? 'error' }, { status: 500 })
+    return NextResponse.json({ ok: false, error: err instanceof Error ? err.message : 'Unknown error' }, { status: 500 })
   }
 }
