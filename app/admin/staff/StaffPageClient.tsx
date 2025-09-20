@@ -30,7 +30,7 @@ interface Role {
   code: string
   name: string
   description: string | null
-  permissions: any
+  permissions: unknown
 }
 
 interface Props {
@@ -172,15 +172,6 @@ export function StaffPageClient({ staff, roles }: Props) {
     }
   }
 
-  const getRoleBadgeColor = (roleCode: string) => {
-    const colors = {
-      'admin': 'badge bg-red-100 text-red-800',
-      'manager': 'badge bg-blue-100 text-blue-800',
-      'cashier': 'badge bg-green-100 text-green-800',
-      'inventory_clerk': 'badge bg-purple-100 text-purple-800'
-    }
-    return colors[roleCode as keyof typeof colors] || 'badge badge-neutral'
-  }
 
   return (
     <div className="space-y-6">
