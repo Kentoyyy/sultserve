@@ -30,9 +30,9 @@ export async function GET(_: Request, { params }: Params) {
     }
 
     return NextResponse.json({ ok: true, data: order })
-  } catch (e: any) {
+  } catch (e: unknown) {
     console.error('Error fetching order:', e)
-    return NextResponse.json({ ok: false, error: e?.message }, { status: 500 })
+    return NextResponse.json({ ok: false, error: e instanceof Error ? e.message : 'Unknown error' }, { status: 500 })
   }
 }
 
