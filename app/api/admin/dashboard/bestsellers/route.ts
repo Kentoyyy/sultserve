@@ -48,9 +48,9 @@ export async function GET() {
       .slice(0, 5)
 
     return NextResponse.json({ ok: true, data })
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('Dashboard bestsellers error:', err)
-    return NextResponse.json({ ok: false, error: err?.message ?? 'error' }, { status: 500 })
+    return NextResponse.json({ ok: false, error: err instanceof Error ? err.message : 'Unknown error' }, { status: 500 })
   }
 }
 
