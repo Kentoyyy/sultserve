@@ -21,13 +21,13 @@ export async function GET() {
 
     const { rows } = await query<{ now: string }>('select now() as now')
     return NextResponse.json({ ok: true, now: rows[0]?.now, target: safe })
-  } catch (err: any) {
+  } catch (err: unknown) {
     return NextResponse.json({
       ok: false,
-      error: err?.message ?? 'error',
-      code: err?.code,
-      detail: err?.detail,
-      hint: err?.hint
+      error: err instanceof Error ? err.message : 'Unknown error',
+      code: (err as { code?: string })?.code,
+      detail: (err as { detail?: string })?.detail,
+      hint: (err as { hint?: string })?.hint
     }, { status: 500 })
   }
 }
