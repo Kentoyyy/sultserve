@@ -22,7 +22,7 @@ async function getProducts() {
   return rows.map((p) => {
     // Calculate availability based on recipe
     let canMake = 0
-    let hasRecipe = !!p.recipe
+    const hasRecipe = !!p.recipe
     let limitingIngredient = null
     const ingredients = p.recipe?.ingredients.map((ing) => ({
       id: ing.id,
