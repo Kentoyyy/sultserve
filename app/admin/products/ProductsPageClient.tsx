@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Modal } from '@/components/ui/Modal'
 import { DeleteConfirmModal } from '@/components/ui/DeleteConfirmModal'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 
 // Predefined coffee shop products with categories
 const PREDEFINED_PRODUCTS = {
@@ -394,7 +395,7 @@ export function ProductsPageClient({ products, categories }: Props) {
     const newImage = String(formData.get('new_image_url') || '')
     const currentImage = String(formData.get('current_image') || '')
 
-    const body: any = { name, priceCents: price, status, description }
+    const body: Record<string, unknown> = { name, priceCents: price, status, description }
     if (newImage || currentImage === '') {
       // replace or remove
       body.imageUrl = newImage || null
@@ -540,7 +541,7 @@ export function ProductsPageClient({ products, categories }: Props) {
                 {/* Product */}
                 <div className="col-span-2 sm:col-span-3">
                   <div className="flex items-center gap-3">
-                    <img src={(product as any).imageUrl || '/placeholder.png'} alt={product.name} className="w-10 h-10 rounded object-cover border" />
+                    <Image src={(product as { imageUrl?: string }).imageUrl || '/placeholder.png'} alt={product.name} width={40} height={40} className="w-10 h-10 rounded object-cover border" />
                     <div>
                       <div className="font-medium text-slate-900 text-sm sm:text-base">{product.name}</div>
                       {!product.hasRecipe && (
@@ -735,9 +736,9 @@ export function ProductsPageClient({ products, categories }: Props) {
               <div className="space-y-2">
                 <label className="block text-sm font-semibold text-slate-700">Product Image</label>
                 <div className="flex items-center gap-3">
-                  <img src={(editNewImageUrl || (selectedProduct as any).imageUrl || '/placeholder.png')} alt="preview" className="w-16 h-16 rounded object-cover border" />
+                  <Image src={(editNewImageUrl || (selectedProduct as { imageUrl?: string }).imageUrl || '/placeholder.png')} alt="preview" width={64} height={64} className="w-16 h-16 rounded object-cover border" />
                   <input type="hidden" name="new_image_url" value={editNewImageUrl} />
-                  <input type="hidden" name="current_image" value={editRemoveImage ? '' : ((selectedProduct as any).imageUrl || '')} />
+                  <input type="hidden" name="current_image" value={editRemoveImage ? '' : ((selectedProduct as { imageUrl?: string }).imageUrl || '')} />
                   <button
                     type="button"
                     className="px-3 py-1.5 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200 text-sm"
@@ -766,7 +767,7 @@ export function ProductsPageClient({ products, categories }: Props) {
                   >
                     Replace Image
                   </button>
-                  {(selectedProduct as any).imageUrl && !editRemoveImage && (
+                  {(selectedProduct as { imageUrl?: string }).imageUrl && !editRemoveImage && (
                     <button
                       type="button"
                       className="px-3 py-1.5 rounded-lg bg-red-50 text-red-700 hover:bg-red-100 text-sm"
