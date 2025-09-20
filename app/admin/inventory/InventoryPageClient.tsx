@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Modal } from '@/components/ui/Modal'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 
 interface Item {
   id: string
@@ -228,9 +229,9 @@ export function InventoryPageClient({ items }: Props) {
                         Used by ({item.usedBy.length})
                       </button>
                     ) : (
-                      <a href="/admin/products" className="text-slate-400 hover:text-amber-700 hover:bg-amber-50 px-3 py-1 rounded text-sm font-medium transition-colors">
+                      <Link href="/admin/products" className="text-slate-400 hover:text-amber-700 hover:bg-amber-50 px-3 py-1 rounded text-sm font-medium transition-colors">
                         No usage
-                      </a>
+                      </Link>
                     )}
                   </div>
                 </div>
@@ -480,12 +481,12 @@ export function InventoryPageClient({ items }: Props) {
             })()}
 
             <div className="pt-2">
-              <a href="/admin/products" className="inline-flex items-center gap-2 text-sm text-amber-700 hover:text-amber-800">
+              <Link href="/admin/products" className="inline-flex items-center gap-2 text-sm text-amber-700 hover:text-amber-800">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                 </svg>
                 Add related product
-              </a>
+              </Link>
             </div>
           </div>
         )}
