@@ -17,7 +17,7 @@ export function getPgPool(): Pool {
 
 export async function query<T = unknown>(text: string, params?: unknown[]): Promise<{ rows: T[] }>{
   const client = getPgPool()
-  return client.query(text, params as any)
+  return client.query(text, params as unknown[])
 }
 
 
