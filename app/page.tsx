@@ -94,8 +94,7 @@ export default function Home() {
 
   useEffect(() => {
     const updateTime = () => {
-      const now = new Date()
-      // setCurrentTime(now.toLocaleTimeString('en-US', {
+      // setCurrentTime(new Date().toLocaleTimeString('en-US', {
       //   hour12: true,
       //   hour: '2-digit',
       //   minute: '2-digit'
@@ -259,7 +258,7 @@ export default function Home() {
       document.body.style.overflow = originalOverflow
       window.removeEventListener('keydown', onKey)
     }
-  }, [isOrderingModalOpen])
+  }, [isOrderingModalOpen, resetOrder])
 
   const fetchData = async () => {
     try {

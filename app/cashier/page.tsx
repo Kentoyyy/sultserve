@@ -55,7 +55,7 @@ export default function CashierDashboard() {
     }, 2000)
     
     return () => clearInterval(interval)
-  }, [isAutoRefresh])
+  }, [isAutoRefresh, fetchOrders])
 
   const fetchOrders = useCallback(async () => {
     try {

@@ -1,10 +1,10 @@
 export const runtime = 'nodejs'
 
 import { NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+import { createClient, SupabaseClient } from '@supabase/supabase-js'
 
 // Initialize Supabase client for server-side operations
-let supabase: any = null
+let supabase: SupabaseClient | null = null
 
 function getSupabaseClient() {
   if (supabase) return supabase
@@ -41,7 +41,7 @@ export async function POST(request: Request) {
     const supabaseClient = getSupabaseClient()
 
     // Upload to Supabase Storage
-    const { data, error } = await supabaseClient.storage
+    const { error } = await supabaseClient.storage
       .from('uploads')
       .upload(filePath, buffer, {
         contentType: file.type,
