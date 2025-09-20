@@ -29,9 +29,9 @@ export async function POST() {
       `select count(*)::int as tables_count from information_schema.tables where table_schema='public'`
     )
 
-    return NextResponse.json({ ok: true, tables: countRes.rows[0]?.tables_count ?? 0 })
-  } catch (e: any) {
-    return NextResponse.json({ ok: false, error: e?.message }, { status: 500 })
+    return NextResponse.json({ ok: true, tables: (countRes.rows[0] as { tables_count: number })?.tables_count ?? 0 })
+  } catch (e: unknown) {
+    return NextResponse.json({ ok: false, error: e instanceof Error ? e.message : 'Unknown error' }, { status: 500 })
   }
 }
 
