@@ -10,8 +10,8 @@ export async function GET() {
       orderBy: { name: 'asc' }
     })
     return NextResponse.json({ ok: true, data: items })
-  } catch (e: any) {
-    return NextResponse.json({ ok: false, error: e?.message }, { status: 500 })
+  } catch (e: unknown) {
+    return NextResponse.json({ ok: false, error: e instanceof Error ? e.message : 'Unknown error' }, { status: 500 })
   }
 }
 
@@ -25,8 +25,8 @@ export async function POST(request: Request) {
       data: { name, unit, quantity, lowStockThreshold: low_stock_threshold }
     })
     return NextResponse.json({ ok: true, id: created.id })
-  } catch (e: any) {
-    return NextResponse.json({ ok: false, error: e?.message }, { status: 500 })
+  } catch (e: unknown) {
+    return NextResponse.json({ ok: false, error: e instanceof Error ? e.message : 'Unknown error' }, { status: 500 })
   }
 }
 
