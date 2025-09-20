@@ -112,9 +112,9 @@ export async function POST(request: Request) {
         createdAt: order.orderedAt
       }
     })
-  } catch (e: any) {
+  } catch (e: unknown) {
     console.error('Error creating order:', e)
-    return NextResponse.json({ ok: false, error: e?.message }, { status: 500 })
+    return NextResponse.json({ ok: false, error: e instanceof Error ? e.message : 'Unknown error' }, { status: 500 })
   }
 }
 
@@ -166,9 +166,9 @@ export async function GET(request: Request) {
         }))
       }
     })
-  } catch (e: any) {
+  } catch (e: unknown) {
     console.error('Error fetching order:', e)
-    return NextResponse.json({ ok: false, error: e?.message }, { status: 500 })
+    return NextResponse.json({ ok: false, error: e instanceof Error ? e.message : 'Unknown error' }, { status: 500 })
   }
 }
 
