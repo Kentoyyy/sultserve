@@ -1,4 +1,7 @@
 import { prisma } from '@/lib/prisma'
+
+export const dynamic = 'force-dynamic'
+
 export default function AdminInventoryNewPage() {
   async function createItem(formData: FormData) {
     'use server'

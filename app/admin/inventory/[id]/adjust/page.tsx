@@ -1,6 +1,8 @@
 import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 
+export const dynamic = 'force-dynamic'
+
 type Params = { params: Promise<{ id: string }> }
 
 export default async function AdjustStockPage({ params }: Params) {

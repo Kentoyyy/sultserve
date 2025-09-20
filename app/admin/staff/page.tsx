@@ -1,6 +1,8 @@
 import { StaffPageClient } from './StaffPageClient'
 import { prisma } from '@/lib/prisma'
 
+export const dynamic = 'force-dynamic'
+
 async function getStaff() {
   const staff = await prisma.staff.findMany({
     include: { 

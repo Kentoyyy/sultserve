@@ -1,6 +1,8 @@
 import { ArchivePageClient } from './ArchivePageClient'
 import { prisma } from '@/lib/prisma'
 
+export const dynamic = 'force-dynamic'
+
 async function getArchivedProducts() {
   const rows = await prisma.product.findMany({
     where: { isArchived: true },

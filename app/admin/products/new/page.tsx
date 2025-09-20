@@ -1,5 +1,7 @@
 import Link from 'next/link'
 
+export const dynamic = 'force-dynamic'
+
 async function getCategories() {
   const base = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
   const res = await fetch(`${base}/api/admin/categories`, { cache: 'no-store' })

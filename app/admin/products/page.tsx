@@ -1,6 +1,8 @@
 import { ProductsPageClient } from './ProductsPageClient'
 import { prisma } from '@/lib/prisma'
 
+export const dynamic = 'force-dynamic'
+
 async function getProducts() {
   const rows = await prisma.product.findMany({
     where: { isArchived: false },

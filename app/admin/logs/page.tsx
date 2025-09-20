@@ -1,6 +1,8 @@
 import { ActivityLogsPageClient } from './ActivityLogsPageClient'
 import { prisma } from '@/lib/prisma'
 
+export const dynamic = 'force-dynamic'
+
 async function getActivityLogs() {
   const logs = await prisma.activityLog.findMany({
     orderBy: { createdAt: 'desc' },

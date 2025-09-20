@@ -1,6 +1,8 @@
 import { InventoryPageClient } from './InventoryPageClient'
 import { prisma } from '@/lib/prisma'
 
+export const dynamic = 'force-dynamic'
+
 async function getItems() {
   const itemsRaw = await prisma.inventoryItem.findMany({
     include: {
