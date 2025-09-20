@@ -1,8 +1,17 @@
 export const runtime = 'nodejs'
 
 import { NextResponse } from 'next/server'
-import { promises as fs } from 'fs'
-import path from 'path'
+import { createClient } from '@supabase/supabase-js'
+
+// Initialize Supabase client for server-side operations
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+if (!supabaseUrl || !supabaseServiceKey) {
+  throw new Error('Missing Supabase environment variables')
+}
+
+const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
 export async function POST(request: Request) {
   try {
@@ -13,19 +22,34 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: false, error: 'file is required' }, { status: 400 })
     }
 
+    // Generate unique filename
+    const ext = file.name.split('.').pop() || 'png'
+    const filename = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
+    const filePath = `product-images/${filename}`
+
+    // Convert file to buffer
     const buffer = Buffer.from(await file.arrayBuffer())
-    const uploadsDir = path.join(process.cwd(), 'public', 'uploads')
 
-    await fs.mkdir(uploadsDir, { recursive: true })
+    // Upload to Supabase Storage
+    const { data, error } = await supabase.storage
+      .from('uploads')
+      .upload(filePath, buffer, {
+        contentType: file.type,
+        cacheControl: '3600',
+        upsert: false
+      })
 
-    const ext = path.extname((file as { name?: string }).name || '') || '.png'
-    const filename = `${Date.now()}-${Math.random().toString(36).slice(2)}${ext}`
-    const filePath = path.join(uploadsDir, filename)
+    if (error) {
+      console.error('Supabase upload error:', error)
+      return NextResponse.json({ ok: false, error: `Upload failed: ${error.message}` }, { status: 500 })
+    }
 
-    await fs.writeFile(filePath, buffer)
+    // Get public URL
+    const { data: urlData } = supabase.storage
+      .from('uploads')
+      .getPublicUrl(filePath)
 
-    const url = `/uploads/${filename}`
-    return NextResponse.json({ ok: true, url })
+    return NextResponse.json({ ok: true, url: urlData.publicUrl })
   } catch (e: unknown) {
     console.error('Upload failed:', e)
     return NextResponse.json({ ok: false, error: e instanceof Error ? e.message : 'Unknown error' }, { status: 500 })

@@ -267,7 +267,7 @@ function AddProductForm({ categories, onSubmit, onCancel }: AddProductFormProps)
             Cancel
           </button>
         </div>
-        <input type="hidden" name="uploaded_image_url" value={imageUrl} />
+        <input type="hidden" name="image_url" value={imageUrl} />
       </form>
     </div>
   )
@@ -341,7 +341,7 @@ export function ProductsPageClient({ products, categories }: Props) {
     const categoryType = String(formData.get('category_type') || '')
     const status = String(formData.get('status') || 'available')
     const description = String(formData.get('description') || '') || null
-    const image_url = String(formData.get('uploaded_image_url') || '') || null
+    const image_url = String(formData.get('image_url') || '') || null
 
     if (!name) {
       alert('Please select a product or enter a custom name')

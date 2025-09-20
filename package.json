@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "prisma:generate": "npx prisma generate",
-    "db:push": "npx prisma db push --accept-data-loss"
+    "db:push": "npx prisma db push --accept-data-loss",
+    "db:seed": "tsx scripts/seed-database.ts"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",
@@ -32,6 +33,7 @@
     "eslint-config-next": "15.5.3",
     "prisma": "^5.20.0",
     "tailwindcss": "^4",
+    "tsx": "^4.20.5",
     "typescript": "^5"
   }
 }
