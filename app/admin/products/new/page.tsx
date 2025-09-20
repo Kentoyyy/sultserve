@@ -1,3 +1,5 @@
+import Link from 'next/link'
+
 async function getCategories() {
   const base = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
   const res = await fetch(`${base}/api/admin/categories`, { cache: 'no-store' })
@@ -46,7 +48,7 @@ export default async function AdminProductNewPage() {
           <label className="block text-sm mb-1">Category</label>
           <select name="category_id" className="w-full rounded border px-3 py-2">
             <option value="">None</option>
-            {categories.map((c: any) => (
+            {categories.map((c: { id: string; name: string }) => (
               <option key={c.id} value={c.id}>{c.name}</option>
             ))}
           </select>
@@ -70,7 +72,7 @@ export default async function AdminProductNewPage() {
         </div>
         <div className="flex gap-2">
           <button className="rounded border px-4 py-2 hover:bg-neutral-50" type="submit">Save</button>
-          <a className="rounded border px-4 py-2 hover:bg-neutral-50" href="/admin/products">Cancel</a>
+          <Link className="rounded border px-4 py-2 hover:bg-neutral-50" href="/admin/products">Cancel</Link>
         </div>
       </form>
     </div>
