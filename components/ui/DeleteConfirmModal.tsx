@@ -73,7 +73,7 @@ export function DeleteConfirmModal({ open, onClose, onConfirm, title, message, i
           actionLabel: 'You are about to restore:',
           buttonText: 'Restore',
           buttonClass: 'bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-md transition-colors font-medium',
-          warning: actionType === 'delete' ? 'This action cannot be undone. Are you sure you want to continue?' : 'Are you sure you want to continue?'
+          warning: 'Are you sure you want to continue?'
         }
       case 'archive':
         return {
@@ -117,7 +117,7 @@ export function DeleteConfirmModal({ open, onClose, onConfirm, title, message, i
         {itemName && (
           <div className="px-6 py-3 bg-slate-50">
             <p className="text-sm text-slate-600">{actionConfig.actionLabel}</p>
-            <p className="font-medium text-slate-900">"{itemName}"</p>
+            <p className="font-medium text-slate-900">&quot;{itemName}&quot;</p>
           </div>
         )}
         
