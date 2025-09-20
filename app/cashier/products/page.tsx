@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
+import Image from 'next/image'
 
 interface Product {
   id: string
@@ -116,9 +117,11 @@ export default function CashierProductsPage() {
             style={{ animationDelay: `${index * 60}ms` }}
           >
             <div className="relative mx-auto w-28 h-28 sm:w-36 sm:h-36 mb-4 overflow-hidden rounded-2xl bg-slate-50 flex items-center justify-center">
-              <img
+              <Image
                 src={getMenuImagePath(product)}
                 alt={product.name}
+                width={144}
+                height={144}
                 className="w-full h-full object-cover"
               />
             </div>
