@@ -29,7 +29,7 @@ export async function GET() {
     const products = rows.map((p) => {
       // Calculate availability based on recipe
       let canMake = 0
-      let hasRecipe = !!p.recipe
+      const hasRecipe = !!p.recipe
       let limitingIngredient = null
       
       if (p.recipe && p.recipe.ingredients.length > 0) {
@@ -77,9 +77,9 @@ export async function GET() {
     })
     
     return NextResponse.json({ ok: true, data: products })
-  } catch (e: any) {
+  } catch (e: unknown) {
     console.error('Error fetching products for cashier:', e)
-    return NextResponse.json({ ok: false, error: e?.message }, { status: 500 })
+    return NextResponse.json({ ok: false, error: e instanceof Error ? e.message : 'Unknown error' }, { status: 500 })
   }
 }
 
