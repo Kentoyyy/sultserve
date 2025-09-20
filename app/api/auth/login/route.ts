@@ -53,7 +53,7 @@ export async function POST(request: Request) {
     })
     
     // Return user info (excluding password)
-    const { password: _, ...userInfo } = staff
+    const { password: _password, ...userInfo } = staff
     
     return NextResponse.json({ 
       ok: true, 
@@ -61,7 +61,7 @@ export async function POST(request: Request) {
       message: 'Login successful'
     })
     
-  } catch (e: any) {
+  } catch (e: unknown) {
     console.error('Login error:', e)
     return NextResponse.json({ ok: false, error: 'Internal server error' }, { status: 500 })
   }
