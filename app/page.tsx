@@ -81,6 +81,20 @@ export default function Home() {
   const [orderStatus, setOrderStatus] = useState<'pending' | 'confirmed' | 'preparing' | 'ready' | 'completed' | 'cancelled'>('pending')
   const [trackingInterval, setTrackingInterval] = useState<NodeJS.Timeout | null>(null)
 
+  const resetOrder = useCallback(() => {
+    // Clear tracking interval if active
+    if (trackingInterval) {
+      clearInterval(trackingInterval)
+      setTrackingInterval(null)
+    }
+    
+    setCart([])
+    setCurrentStep('menu')
+    setOrderNumber('')
+    setOrderStatus('pending')
+    setSelectedPaymentMethod('cash')
+  }, [trackingInterval])
+
   // Smooth scroll function
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId)
@@ -473,20 +487,6 @@ export default function Home() {
     setTrackingInterval(interval)
     return interval
   }
-
-  const resetOrder = useCallback(() => {
-    // Clear tracking interval if active
-    if (trackingInterval) {
-      clearInterval(trackingInterval)
-      setTrackingInterval(null)
-    }
-    
-    setCart([])
-    setCurrentStep('menu')
-    setOrderNumber('')
-    setOrderStatus('pending')
-    setSelectedPaymentMethod('cash')
-  }, [trackingInterval])
 
   if (loading) {
     return (
