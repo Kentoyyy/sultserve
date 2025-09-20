@@ -47,9 +47,9 @@ export async function GET(request: Request) {
         })),
       },
     })
-  } catch (e: any) {
+  } catch (e: unknown) {
     console.error('Error fetching order by number:', e)
-    return NextResponse.json({ ok: false, error: e?.message || 'Internal error' }, { status: 500 })
+    return NextResponse.json({ ok: false, error: e instanceof Error ? e.message : 'Internal error' }, { status: 500 })
   }
 }
 
