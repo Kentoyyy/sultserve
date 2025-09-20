@@ -53,7 +53,7 @@ export async function POST(request: Request) {
     })
     
     // Return user info (excluding password)
-    const { password, ...userInfo } = staff
+    const { password: _, ...userInfo } = staff
     
     return NextResponse.json({ 
       ok: true, 
