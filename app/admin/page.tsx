@@ -2,16 +2,16 @@
 
 import { useState, useEffect } from 'react'
 
-async function fetchJson<T>(path: string): Promise<T | null> {
-  try {
-    const res = await fetch(path, { cache: 'no-store' })
-    if (!res.ok) return null
-    const data = await res.json()
-    return data
-  } catch {
-    return null
-  }
-}
+// async function fetchJson<T>(path: string): Promise<T | null> {
+//   try {
+//     const res = await fetch(path, { cache: 'no-store' })
+//     if (!res.ok) return null
+//     const data = await res.json()
+//     return data
+//   } catch {
+//     return null
+//   }
+// }
 
 interface ActivityLog {
   action: string
