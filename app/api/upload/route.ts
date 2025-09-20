@@ -18,7 +18,7 @@ export async function POST(request: Request) {
 
     await fs.mkdir(uploadsDir, { recursive: true })
 
-    const ext = path.extname((file as any).name || '') || '.png'
+    const ext = path.extname((file as { name?: string }).name || '') || '.png'
     const filename = `${Date.now()}-${Math.random().toString(36).slice(2)}${ext}`
     const filePath = path.join(uploadsDir, filename)
 
@@ -26,9 +26,9 @@ export async function POST(request: Request) {
 
     const url = `/uploads/${filename}`
     return NextResponse.json({ ok: true, url })
-  } catch (e: any) {
+  } catch (e: unknown) {
     console.error('Upload failed:', e)
-    return NextResponse.json({ ok: false, error: e?.message }, { status: 500 })
+    return NextResponse.json({ ok: false, error: e instanceof Error ? e.message : 'Unknown error' }, { status: 500 })
   }
 }
 
