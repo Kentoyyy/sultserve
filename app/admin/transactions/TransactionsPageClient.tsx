@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
+import Image from 'next/image'
 
 interface Transaction {
   id: string
@@ -56,7 +57,7 @@ export default function TransactionsPageClient() {
   const [lastUpdated, setLastUpdated] = useState<string>('')
   const [updateNotification, setUpdateNotification] = useState<string | null>(null)
 
-  const fetchTransactions = async () => {
+  const fetchTransactions = useCallback(async () => {
     try {
       setLoading(true)
       const params = new URLSearchParams({
@@ -91,11 +92,11 @@ export default function TransactionsPageClient() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [currentPage, filters, data?.transactions.length])
 
   useEffect(() => {
     fetchTransactions()
-  }, [currentPage, filters])
+  }, [fetchTransactions])
 
   // Real-time updates every 3 seconds
   useEffect(() => {
@@ -106,7 +107,7 @@ export default function TransactionsPageClient() {
     }, 3000) // Update every 3 seconds
 
     return () => clearInterval(interval)
-  }, [isAutoRefresh, currentPage, filters])
+  }, [isAutoRefresh, fetchTransactions])
 
   // Lock body scroll and close modal on Escape when a transaction is selected
   useEffect(() => {
@@ -614,9 +615,11 @@ export default function TransactionsPageClient() {
                     <div key={item.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
                       <div className="flex items-center gap-3">
                         {item.product.imageUrl && (
-                          <img
+                          <Image
                             src={item.product.imageUrl}
                             alt={item.product.name}
+                            width={48}
+                            height={48}
                             className="w-12 h-12 object-cover rounded-lg"
                           />
                         )}
