@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
+import Image from 'next/image'
 
 interface OrderItem {
   name: string
@@ -42,13 +43,13 @@ export default function ReceiptPage() {
         }
 
         // Transform to ReceiptData shape
-        const items = order.items.map((i: any) => ({
+        const items = order.items.map((i: { productName: string; quantity: number; unitPriceCents: number; totalCents: number }) => ({
           name: i.productName,
           quantity: i.quantity,
           price: i.unitPriceCents / 100,
           total: i.totalCents / 100,
         }))
-        const subtotal = items.reduce((s: number, it: any) => s + it.total, 0)
+        const subtotal = items.reduce((s: number, it: { total: number }) => s + it.total, 0)
         const total = order.totalCents / 100
         const tax = Math.max(0, total - subtotal)
 
@@ -93,7 +94,7 @@ export default function ReceiptPage() {
             </svg>
           </div>
           <h2 className="text-xl font-bold text-slate-900 mb-2">Receipt Not Found</h2>
-          <p className="text-slate-600">The receipt you're looking for could not be found.</p>
+          <p className="text-slate-600">The receipt you&apos;re looking for could not be found.</p>
         </div>
       </div>
     )
@@ -105,7 +106,7 @@ export default function ReceiptPage() {
         {/* Header */}
         <div className="bg-slate-900 text-white p-6 text-center">
           <div className="w-16 h-16 bg-white bg-opacity-10 rounded-full flex items-center justify-center mx-auto mb-3 overflow-hidden">
-            <img src="/images/landing_image.png" alt="Logo" className="w-12 h-12 object-cover rounded-full" />
+            <Image src="/images/landing_image.png" alt="Logo" width={48} height={48} className="w-12 h-12 object-cover rounded-full" />
           </div>
           <h1 className="text-xl font-bold">SulitServe Café</h1>
           <p className="text-amber-200 text-sm">Digital Receipt</p>
