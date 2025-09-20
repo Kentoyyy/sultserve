@@ -50,14 +50,14 @@ export default function KioskMenuPage() {
   }
 
   const filteredProducts = selectedCategory 
-    ? products.filter((p: any) => p.category === selectedCategory)
+    ? products.filter((p: { category: string }) => p.category === selectedCategory)
     : products
 
-  const availableProducts = filteredProducts.filter((p: any) => 
+  const availableProducts = filteredProducts.filter((p: { status: string; hasRecipe: boolean; canMake: number }) => 
     p.status === 'available' && (!p.hasRecipe || p.canMake > 0)
   )
 
-  const addToCart = (product: any) => {
+  const addToCart = (product: { id: string; name: string; priceCents: number; category: string }) => {
     setCart(prevCart => {
       const existingItem = prevCart.find(item => item.id === product.id)
       if (existingItem) {
@@ -186,8 +186,8 @@ export default function KioskMenuPage() {
                 All Items
                 <span className="ml-2 text-xs opacity-75">({availableProducts.length})</span>
               </button>
-              {categories.map((category: any) => {
-                const categoryProducts = products.filter((p: any) => 
+              {categories.map((category: { id: string; name: string }) => {
+                const categoryProducts = products.filter((p: { category: string; status: string; hasRecipe: boolean; canMake: number }) => 
                   p.category === category.name && 
                   p.status === 'available' && 
                   (!p.hasRecipe || p.canMake > 0)
@@ -212,7 +212,7 @@ export default function KioskMenuPage() {
 
           {/* Products Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {availableProducts.map((product: any) => {
+            {availableProducts.map((product: { id: string; name: string; description?: string; priceCents: number; category: string; status: string; hasRecipe: boolean; canMake: number }) => {
               const cartQuantity = getCartItemQuantity(product.id)
               return (
                 <div key={product.id} className="bg-white rounded-xl border border-slate-200 overflow-hidden hover:border-amber-200 transition-colors shadow-sm">
