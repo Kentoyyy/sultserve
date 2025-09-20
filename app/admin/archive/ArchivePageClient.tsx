@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { DeleteConfirmModal } from '@/components/ui/DeleteConfirmModal'
 
 interface ArchivedProduct {
@@ -123,7 +124,7 @@ export function ArchivePageClient({ archivedProducts }: Props) {
                 <p className="text-slate-500 max-w-sm">
                   When you archive products from the Products page, they will appear here and can be restored at any time.
                 </p>
-                <a 
+                <Link 
                   href="/admin/products" 
                   className="mt-4 btn-primary inline-flex items-center"
                 >
@@ -131,7 +132,7 @@ export function ArchivePageClient({ archivedProducts }: Props) {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                   </svg>
                   Go to Products
-                </a>
+                </Link>
               </div>
             </div>
           )}
