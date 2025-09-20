@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
     const skip = (page - 1) * limit
 
     // Build where clause
-    const where: any = {}
+    const where: Record<string, unknown> = {}
 
     if (search) {
       where.OR = [
@@ -44,10 +44,10 @@ export async function GET(request: NextRequest) {
     if (dateFrom || dateTo) {
       where.orderedAt = {}
       if (dateFrom) {
-        where.orderedAt.gte = new Date(dateFrom)
+        (where.orderedAt as Record<string, unknown>).gte = new Date(dateFrom)
       }
       if (dateTo) {
-        where.orderedAt.lte = new Date(dateTo + 'T23:59:59.999Z')
+        (where.orderedAt as Record<string, unknown>).lte = new Date(dateTo + 'T23:59:59.999Z')
       }
     }
 
