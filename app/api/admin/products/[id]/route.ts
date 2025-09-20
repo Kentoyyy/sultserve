@@ -10,8 +10,8 @@ export async function GET(_: Request, { params }: Params) {
   try {
     const product = await prisma.product.findUnique({ where: { id } })
     return NextResponse.json({ ok: true, data: product })
-  } catch (e: any) {
-    return NextResponse.json({ ok: false, error: e?.message }, { status: 500 })
+  } catch (e: unknown) {
+    return NextResponse.json({ ok: false, error: e instanceof Error ? e.message : 'Unknown error' }, { status: 500 })
   }
 }
 
@@ -23,7 +23,7 @@ export async function PATCH(request: Request, { params }: Params) {
     // Get original product for logging
     const originalProduct = await prisma.product.findUnique({ where: { id } })
     
-    const updateData: any = {}
+    const updateData: Record<string, unknown> = {}
     if ('name' in body) updateData.name = body.name
     if ('description' in body) updateData.description = body.description
     if ('imageUrl' in body) updateData.imageUrl = body.imageUrl
@@ -36,13 +36,13 @@ export async function PATCH(request: Request, { params }: Params) {
     // Log the activity
     if (originalProduct) {
       const { logProductActivity } = await import('@/lib/activityLogger')
-      const changes: any = {}
+      const changes: Record<string, unknown> = {}
       
       if (originalProduct.name !== updateData.name && updateData.name) {
         changes.name = { from: originalProduct.name, to: updateData.name }
       }
       if (originalProduct.priceCents !== updateData.priceCents && updateData.priceCents) {
-        changes.price = { from: `₱${(originalProduct.priceCents / 100).toFixed(2)}`, to: `₱${(updateData.priceCents / 100).toFixed(2)}` }
+        changes.price = { from: `₱${(Number(originalProduct.priceCents) / 100).toFixed(2)}`, to: `₱${(Number(updateData.priceCents) / 100).toFixed(2)}` }
       }
       if (originalProduct.status !== updateData.status && updateData.status) {
         changes.status = { from: originalProduct.status, to: updateData.status }
@@ -58,8 +58,8 @@ export async function PATCH(request: Request, { params }: Params) {
     }
     
     return NextResponse.json({ ok: true })
-  } catch (e: any) {
-    return NextResponse.json({ ok: false, error: e?.message }, { status: 500 })
+  } catch (e: unknown) {
+    return NextResponse.json({ ok: false, error: e instanceof Error ? e.message : 'Unknown error' }, { status: 500 })
   }
 }
 
@@ -90,8 +90,8 @@ export async function DELETE(_: Request, { params }: Params) {
     }
     
     return NextResponse.json({ ok: true })
-  } catch (e: any) {
-    return NextResponse.json({ ok: false, error: e?.message }, { status: 500 })
+  } catch (e: unknown) {
+    return NextResponse.json({ ok: false, error: e instanceof Error ? e.message : 'Unknown error' }, { status: 500 })
   }
 }
 
